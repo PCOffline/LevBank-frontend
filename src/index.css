@@ -1,10 +1,14 @@
-body {
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200&display=swap');
+
+body,html {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Assistant', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  background-image: url('https://cdn1.vectorstock.com/i/1000x1000/37/65/blue-and-aqua-background-vector-8203765.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 code {

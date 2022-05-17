@@ -1,0 +1,35 @@
+#card {
+  margin: 0 auto;
+  margin-top: 100px; 
+  width: fit-content;
+  text-align: center;
+  background-color: rgb(3, 41, 145);
+  font-size: 24px;
+  padding: 15px 25px;
+  color: white;
+}
+
+#card p span {
+  margin-left: 3px;
+}
+
+#select {
+  color: white;
+  font-size: 20px;
+}
+
+#select~svg {
+  color: white;
+}
+
+#select~fieldset {
+  border: none;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.left {
+  width: fit-content;
+}
