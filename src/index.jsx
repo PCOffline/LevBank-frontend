@@ -7,8 +7,8 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-import Profile from './components/Profile';
-import Home from './components/Home';
+import Profile from './components/pages/Home/Profile';
+import Home from './components/pages/Home';
 
 let user = { sum: 50, name: 'Avi' };
 

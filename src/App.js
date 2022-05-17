@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import Home from './components/Home';
+import Home from './components/pages/Home';
 import './App.css';
 import { AppBar } from '@mui/material';
 
