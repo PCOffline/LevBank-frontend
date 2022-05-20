@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { TextField, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 
@@ -12,8 +13,17 @@ const ErrorMessage = styled(Typography)({
 });
 
 export default function SignInput(props) {
-  const { value, setValue, label, type, placeholder, required, showError, customValidation } =
-    props;
+  const {
+    value,
+    setValue,
+    label,
+    type,
+    placeholder,
+    required,
+    showError,
+    customValidation,
+    setIsValid
+  } = props;
 
   const validateName = (name) => /^[a-zA-Z0-9_\.]{4,}$/.test(name);
   const invalidNameText =
@@ -28,8 +38,11 @@ export default function SignInput(props) {
     const requiredCheck = value || !required;
     const fieldName = label || placeholder || 'Field';
 
-    if (!requiredCheck) return { valid: false, errorText: `${fieldName} required` };
-    if (customValidation && !customValidation(value).valid) return customValidation(value);
+    if (!requiredCheck)
+      return { valid: false, errorText: `${fieldName} required` };
+
+    if (customValidation && !customValidation(value).valid)
+      return customValidation(value);
 
     switch (type) {
       case 'name':
@@ -49,6 +62,8 @@ export default function SignInput(props) {
     }
   };
 
+  useEffect(() => setIsValid?.(label, validate().valid), [validate, value, label]);
+
   return (
     <div>
       <StyledInput
@@ -61,7 +76,9 @@ export default function SignInput(props) {
         required={required}
         fullWidth
       />
-      {showError && !validate().valid && <ErrorMessage>{validate().errorText}</ErrorMessage>}
+      {showError && !validate().valid && (
+        <ErrorMessage>{validate().errorText}</ErrorMessage>
+      )}
     </div>
   );
 }
