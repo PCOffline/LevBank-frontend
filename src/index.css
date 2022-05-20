@@ -1,17 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200&display=swap');
-
-body,html {
-  margin: 0;
-  font-family: 'Assistant', sans-serif;
+body,
+html,
+#root {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
-  background-image: url('https://cdn1.vectorstock.com/i/1000x1000/37/65/blue-and-aqua-background-vector-8203765.jpg');
-  background-repeat: no-repeat;
-  background-size: cover;
+  margin: 0;
+  font-family: Assistant;
+  overflow-x: hidden;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+* {
+  font-family: 'Public Sans', sans-serif !important;
+}
+
+a {
+  text-decoration: none;
+}
+.MuiOutlinedInput-notchedOutline {
+  border: none;
+}
+.MuiInputBase-inputMultiline {
+  padding: 0.5rem !important;
 }
