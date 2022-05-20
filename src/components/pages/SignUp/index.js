@@ -105,7 +105,7 @@ export default function SignUp() {
         <FormContainer>
           <NameContainer>
             <SignInput
-              label='First Name'
+              label='First name'
               value={firstName}
               setValue={setFirstName}
               showError={submitFirstPressed}
@@ -115,7 +115,7 @@ export default function SignUp() {
             />
             <SignInput
               value={lastName}
-              label='Last Name'
+              label='Last name'
               setValue={setLastName}
               showError={submitFirstPressed}
               setIsValid={handleIsValidChange}
@@ -142,7 +142,7 @@ export default function SignUp() {
             required
           />
           <SignInput
-            label='Confirm Password'
+            label='Confirm password'
             value={confirmPassword}
             setValue={setConfirmPassword}
             showError={submitFirstPressed}
