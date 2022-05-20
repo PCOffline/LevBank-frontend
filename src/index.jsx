@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // import Profile from './components/pages/Home/Profile';
 // import Home from './components/pages/Home';
 import SignUp from './components/pages/SignUp';
+import Login from './components/pages/Login';
 import { createTheme, ThemeProvider } from '@mui/material';
 
 let user = { sum: 50, name: 'Avi' };
@@ -34,6 +35,7 @@ root.render(
       <BrowserRouter>
         <Routes>
           <Route path='/signup' element={<SignUp />} />
+          <Route path='/login' element={<Login  />} />
           {/* <Route path='/' element={<App />}>
           <Route index element={<Home user={user} />} />
           <Route  path='profile' element={<Profile />} />
