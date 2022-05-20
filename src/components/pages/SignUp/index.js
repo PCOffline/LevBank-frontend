@@ -18,7 +18,7 @@ const FormContainer = styled(Box)({
   width: 'fit-content',
   gap: '1em',
   margin: 0,
-  fontSize: '18 px',
+  fontSize: '18px',
 });
 
 const NameContainer = styled.div({
@@ -35,6 +35,7 @@ const StyledButton = styled(Button)({
   fontSize: '0.9375rem',
   borderRadius: '8px',
   boxShadow: '0 8px 16px 0 rgb(0 171 85 / 24%)',
+  height: '48px',
 });
 
 const HeadingContainer = styled.div({
