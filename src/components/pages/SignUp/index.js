@@ -48,12 +48,26 @@ const Heading = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
 }));
 
+const SiteName = styled.span(({ theme }) => ({
+  fontSize: '1.5rem',
+  fontWeight: 'bold',
+  color: theme.palette.primary.main,
+}));
+
 const SubHeading = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.disabled,
   fontSize: '1rem',
 }));
 
-export default function SignUp(props) {
+const LoginText = styled(Typography)({
+  marginTop: '20px',
+});
+
+const LoginLink = styled.span(({ theme }) => ({
+  color: theme.palette.primary.main,
+  fontWeight: 'bold',
+}));
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
@@ -70,7 +84,9 @@ export default function SignUp(props) {
     <SignUpContainer>
       <Box>
         <HeadingContainer>
-          <Heading>Welcome to Lev Bank</Heading>
+          <Heading>
+            Welcome to <SiteName>Lev Bank</SiteName>
+          </Heading>
           <SubHeading>Enter your details below</SubHeading>
         </HeadingContainer>
         <FormContainer>
@@ -126,6 +142,12 @@ export default function SignUp(props) {
             Sign Up
           </StyledButton>
         </FormContainer>
+        <LoginText color='textPrimary'>
+          Already have an account?
+          <Link to='/login'>
+            <LoginLink> Login</LoginLink>
+          </Link>
+        </LoginText>
       </Box>
     </SignUpContainer>
   );
