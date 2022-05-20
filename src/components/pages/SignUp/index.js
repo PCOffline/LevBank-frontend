@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button, Input, Card, Typography, Box, TextField } from '@mui/material';
+import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
 import SignInput from '../../common/SignInput';
 
@@ -69,16 +70,27 @@ const LoginLink = styled.span(({ theme }) => ({
   fontWeight: 'bold',
 }));
 
+export default function SignUp() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [submitFirstPressed, setSubmitFirstPressed] = useState(false);
+  const fieldsValidation = useRef({});
+
+  const handleIsValidChange = (label, value) => {
+    fieldsValidation.current[label] = value;
+  };
 
   const handleSubmit = () => {
     setSubmitFirstPressed(true);
-    console.log({ firstName, lastName, username, password, confirmPassword });
+    if (
+      Object.values(fieldsValidation).length &&
+      Object.values(fieldsValidation.current).every((value) => value)
+    )
+      // TODO: Send a request to the admin
+      console.log('hi');
   };
 
   return (
@@ -97,6 +109,7 @@ const LoginLink = styled.span(({ theme }) => ({
               value={firstName}
               setValue={setFirstName}
               showError={submitFirstPressed}
+              setIsValid={handleIsValidChange}
               type='name'
               required
             />
@@ -105,6 +118,7 @@ const LoginLink = styled.span(({ theme }) => ({
               label='Last Name'
               setValue={setLastName}
               showError={submitFirstPressed}
+              setIsValid={handleIsValidChange}
               type='name'
               required
             />
@@ -114,6 +128,7 @@ const LoginLink = styled.span(({ theme }) => ({
             value={username}
             setValue={setUsername}
             showError={submitFirstPressed}
+            setIsValid={handleIsValidChange}
             type='name'
             required
           />
@@ -122,6 +137,7 @@ const LoginLink = styled.span(({ theme }) => ({
             value={password}
             setValue={setPassword}
             showError={submitFirstPressed}
+            setIsValid={handleIsValidChange}
             type='password'
             required
           />
@@ -130,7 +146,11 @@ const LoginLink = styled.span(({ theme }) => ({
             value={confirmPassword}
             setValue={setConfirmPassword}
             showError={submitFirstPressed}
-            customValidation={(value) => ({ valid: value === password, errorText: 'Passwords do not match' })}
+            customValidation={(value) => ({
+              valid: value === password,
+              errorText: 'Passwords do not match',
+            })}
+            setIsValid={handleIsValidChange}
             type='password'
             required
           />
