@@ -3,6 +3,7 @@ import { Button, Typography, Box, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
 import SignInput from '../../common/SignInput';
+import Logo from '../../common/Logo';
 
 const PageContainer = styled(Box)({
   display: 'flex',
