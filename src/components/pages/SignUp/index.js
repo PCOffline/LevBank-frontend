@@ -3,6 +3,7 @@ import { Button, Input, Card, Typography, Box, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
 import SignInput from '../../common/SignInput';
+import Logo from '../../common/Logo';
 
 const SignUpContainer = styled(Box)({
   display: 'flex',
@@ -70,6 +71,10 @@ const LoginLink = styled.span(({ theme }) => ({
   fontWeight: 'bold',
 }));
 
+const StyledLogo = styled(Logo)({
+  padding: '20px',
+});
+
 export default function SignUp() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -94,82 +99,85 @@ export default function SignUp() {
   };
 
   return (
-    <SignUpContainer>
-      <Box>
-        <HeadingContainer>
-          <Heading>
-            Welcome to <SiteName>Lev Bank</SiteName>
-          </Heading>
-          <SubHeading>Enter your details below</SubHeading>
-        </HeadingContainer>
-        <FormContainer>
-          <NameContainer>
+    <>
+      <StyledLogo withText />
+      <SignUpContainer>
+        <Box>
+          <HeadingContainer>
+            <Heading>
+              Welcome to <SiteName>Lev Bank</SiteName>
+            </Heading>
+            <SubHeading>Enter your details below</SubHeading>
+          </HeadingContainer>
+          <FormContainer>
+            <NameContainer>
+              <SignInput
+                label='First name'
+                value={firstName}
+                setValue={setFirstName}
+                showError={submitFirstPressed}
+                setIsValid={handleIsValidChange}
+                type='name'
+                required
+              />
+              <SignInput
+                value={lastName}
+                label='Last name'
+                setValue={setLastName}
+                showError={submitFirstPressed}
+                setIsValid={handleIsValidChange}
+                type='name'
+                required
+              />
+            </NameContainer>
             <SignInput
-              label='First name'
-              value={firstName}
-              setValue={setFirstName}
+              label='Username'
+              value={username}
+              setValue={setUsername}
               showError={submitFirstPressed}
               setIsValid={handleIsValidChange}
               type='name'
               required
             />
             <SignInput
-              value={lastName}
-              label='Last name'
-              setValue={setLastName}
+              label='Password'
+              value={password}
+              setValue={setPassword}
               showError={submitFirstPressed}
               setIsValid={handleIsValidChange}
-              type='name'
+              type='password'
               required
             />
-          </NameContainer>
-          <SignInput
-            label='Username'
-            value={username}
-            setValue={setUsername}
-            showError={submitFirstPressed}
-            setIsValid={handleIsValidChange}
-            type='name'
-            required
-          />
-          <SignInput
-            label='Password'
-            value={password}
-            setValue={setPassword}
-            showError={submitFirstPressed}
-            setIsValid={handleIsValidChange}
-            type='password'
-            required
-          />
-          <SignInput
-            label='Confirm password'
-            value={confirmPassword}
-            setValue={setConfirmPassword}
-            showError={submitFirstPressed}
-            customValidation={(value) => ({
-              valid: value === password,
-              errorText: 'Passwords do not match',
-            })}
-            setIsValid={handleIsValidChange}
-            type='password'
-            required
-          />
-          <StyledButton
-            variant='contained'
-            type='submit'
-            onClick={handleSubmit}
-            disableElevation
-          >
-            Sign Up
-          </StyledButton>
-        </FormContainer>
-        <LoginText color='textPrimary'>
-          Already have an account?
-          <Link to='/login'>
-            <LoginLink> Login</LoginLink>
-          </Link>
-        </LoginText>
-      </Box>
-    </SignUpContainer>
+            <SignInput
+              label='Confirm password'
+              value={confirmPassword}
+              setValue={setConfirmPassword}
+              showError={submitFirstPressed}
+              customValidation={(value) => ({
+                valid: value === password,
+                errorText: 'Passwords do not match',
+              })}
+              setIsValid={handleIsValidChange}
+              type='password'
+              required
+            />
+            <StyledButton
+              variant='contained'
+              type='submit'
+              onClick={handleSubmit}
+              disableElevation
+            >
+              Sign Up
+            </StyledButton>
+          </FormContainer>
+          <LoginText color='textPrimary'>
+            Already have an account?
+            <Link to='/login'>
+              <LoginLink> Login</LoginLink>
+            </Link>
+          </LoginText>
+        </Box>
+      </SignUpContainer>
+    </>
   );
 }
