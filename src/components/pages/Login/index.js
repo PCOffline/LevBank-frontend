@@ -70,6 +70,10 @@ const LoginLink = styled.span(({ theme }) => ({
   fontWeight: 'bold',
 }));
 
+const StyledLogo = styled(Logo)({
+  padding: '20px',
+});
+
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -91,49 +95,52 @@ export default function Login() {
   };
 
   return (
-    <PageContainer>
-      <LoginContainer>
-        <HeadingContainer>
-          <Heading>
-            Sign in to <SiteName>Lev Bank</SiteName>
-          </Heading>
-          <SubHeading>Enter your details below</SubHeading>
-        </HeadingContainer>
-        <FormContainer>
-          <SignInput
-            label='Username'
-            value={username}
-            setValue={setUsername}
-            showError={submitFirstPressed}
-            setIsValid={handleIsValidChange}
-            type='name'
-            required
-          />
-          <SignInput
-            label='Password'
-            value={password}
-            setValue={setPassword}
-            showError={submitFirstPressed}
-            setIsValid={handleIsValidChange}
-            type='password'
-            required
-          />
-          <StyledButton
-            variant='contained'
-            type='submit'
-            onClick={handleSubmit}
-            disableElevation
-          >
-            Login
-          </StyledButton>
-        </FormContainer>
-        <LoginText color='textPrimary'>
-          Don't have an account?
-          <Link to='/signup'>
-            <LoginLink> Get started</LoginLink>
-          </Link>
-        </LoginText>
-      </LoginContainer>
-    </PageContainer>
+    <>
+      <StyledLogo withText />
+      <PageContainer>
+        <LoginContainer>
+          <HeadingContainer>
+            <Heading>
+              Sign in to <SiteName>Lev Bank</SiteName>
+            </Heading>
+            <SubHeading>Enter your details below</SubHeading>
+          </HeadingContainer>
+          <FormContainer>
+            <SignInput
+              label='Username'
+              value={username}
+              setValue={setUsername}
+              showError={submitFirstPressed}
+              setIsValid={handleIsValidChange}
+              type='name'
+              required
+            />
+            <SignInput
+              label='Password'
+              value={password}
+              setValue={setPassword}
+              showError={submitFirstPressed}
+              setIsValid={handleIsValidChange}
+              type='password'
+              required
+            />
+            <StyledButton
+              variant='contained'
+              type='submit'
+              onClick={handleSubmit}
+              disableElevation
+            >
+              Login
+            </StyledButton>
+          </FormContainer>
+          <LoginText color='textPrimary'>
+            Don't have an account?
+            <Link to='/signup'>
+              <LoginLink> Get started</LoginLink>
+            </Link>
+          </LoginText>
+        </LoginContainer>
+      </PageContainer>
+    </>
   );
 }
