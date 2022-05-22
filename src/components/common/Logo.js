@@ -30,7 +30,7 @@ function Logo(props) {
   const { withText, className } = props;
 
   return (
-    <Link to='/'>
+    <Link to='/' tabIndex={-1}>
       <LogoContainer className={className}>
         <LogoIcon />
         {withText && <LogoText>Lev Bank</LogoText>}
