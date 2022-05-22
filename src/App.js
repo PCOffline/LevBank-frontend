@@ -26,6 +26,8 @@ const NavBar = styled(List)(({ theme }) => ({
   color: theme.palette.text.disabled,
   width: '240px',
   padding: '0 16px',
+  height: '100%',
+  position: 'relative',
 }));
 
 const NavItem = styled(NavLink)(({ theme }) => ({
@@ -78,6 +80,12 @@ const ProfileContainer = styled(Box)(({ theme }) => ({
   borderRadius: '8px',
 }));
 
+const AppContainer = styled.div({
+  display: 'flex',
+  height: '100%',
+  gap: '3em',
+});
+
 const ChatContainer = styled(Box)(({ theme }) => ({}));
 
 export default function App() {
@@ -93,7 +101,7 @@ export default function App() {
   };
 
   return (
-    <>
+    <AppContainer>
       <NavBar id='nav'>
         <TopNav>
           <Logo withText />
@@ -113,6 +121,6 @@ export default function App() {
         <ChatContainer></ChatContainer>
       </NavBar>
       <Outlet />
-    </>
+    </AppContainer>
   );
 }
