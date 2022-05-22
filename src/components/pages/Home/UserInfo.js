@@ -1,32 +1,43 @@
 import { ArrowDownwardRounded } from '@mui/icons-material';
 import { useState } from 'react';
-import { Card, MenuItem, Select } from '@mui/material';
+import { Typography, Card, MenuItem, Select } from '@mui/material';
 import SelectInput from '@mui/material/Select/SelectInput';
-import './UserInfo.css';
+import styled from '@emotion/styled';
+
+const Container = styled(Card)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
+  padding: '24px 36px',
+  height: 'fit-content',
+}));
+
+const Title = styled(Typography)(({ theme }) => ({
+  fontWeight: 'bold',
+  fontSize: '1rem',
+  color: theme.palette.primary.dark,
+}));
+
+const SubTitle = styled(Typography)(({ theme }) => ({
+  fontWeight: 'bold',
+  fontSize: '1.5rem',
+  color: theme.palette.primary.dark,
+  margin: '8px 0px 0px',
+}));
+
+const Text = styled(Typography)(({ theme }) => ({
+  fontSize: '1.1rem',
+  color: theme.palette.primary.main,
+}));
 
 export default function UserInfo(props) {
-  const [currency, setCurrency] = useState('LevCoin');
-  const handleChange = (event) => {
-    setCurrency(event.target.value);
-  };
-
   return (
-    <Card id='card'>
-      <p>
-        Welcome, <span className='bold'>{props.user.name}</span>
-      </p>
-      <p>
-        Remaining sum: <span className='bold'>{props.user.sum}</span>
-      </p>
-      <span className='left'>Currency:</span>
-      <Select
-        id='select'
-        value={currency}
-        onChange={(event) => handleChange(event)}
-      >
-        <MenuItem value='LevCoin'>LevCoin</MenuItem>
-        <MenuItem value='ILS'>ILS</MenuItem>
-      </Select>
-    </Card>
+    <Container>
+      <Title>Account Summary</Title>
+      <SubTitle>Balance</SubTitle>
+      <Text>129 LC</Text>
+      <SubTitle>Lending</SubTitle>
+      <Text>15 LC</Text>
+      <SubTitle>Borrowing</SubTitle>
+      <Text>0 LC</Text>
+    </Container>
   );
 }
