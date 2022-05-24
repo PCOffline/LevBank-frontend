@@ -7,9 +7,62 @@ import Profile from './components/pages/Home/Profile';
 import Home from './components/pages/Home';
 import SignUp from './components/pages/SignUp';
 import Login from './components/pages/Login';
+import LendingsAndBorrowings from './components/pages/LendingsAndBorrowings';
 import { createTheme, ThemeProvider } from '@mui/material';
 
-let user = { sum: 50, name: 'Avi' };
+const mockTransactions = [
+  {
+    id: 'a1b2',
+    amount: 50,
+    date: '2022-05-19',
+    description: "Avi's Birthday",
+    from: 'Daniel',
+  },
+  {
+    id: 'b1b2',
+    amount: 15,
+    date: '2022-05-17',
+    description: 'Pizza',
+    to: 'Osher Pizza',
+  },
+  {
+    id: 'c1c2',
+    amount: 22,
+    date: '2022-05-09',
+    description: 'Phone Bill',
+    to: 'Pelephone',
+  },
+  {
+    id: 'a1d2',
+    amount: 14,
+    date: '2022-04-01',
+    description: 'Refund',
+    from: 'AliExpress',
+  },
+  {
+    id: 'c1d2',
+    amount: 14,
+    date: '2022-03-15',
+    description: 'Coffe Cup',
+    to: 'AliExpress',
+  },
+  {
+    id: 'c1b2',
+    amount: 25,
+    date: '2022-03-11',
+    description: 'T-Shirt',
+    to: 'Delta',
+  },
+  {
+    id: 'd1a2',
+    amount: 11,
+    date: '2021-12-01',
+    description: "Daniel's Birthday",
+    to: 'Daniel',
+  },
+];
+
+let user = { balance: 50, name: 'Avi', lends: mockTransactions, borrowings: mockTransactions, transactions: mockTransactions };
 
 const theme = createTheme({
   palette: {
@@ -44,6 +97,7 @@ root.render(
           <Route path='/' element={<App />}>
             <Route index element={<Home user={user} />} />
             <Route path='transactions' element={<p>Hi</p>}  />
+            <Route path='lends-and-borrowings' element={<LendingsAndBorrowings user={user} />} />
             <Route path='profile' element={<Profile />} />
           </Route>
         </Routes>
