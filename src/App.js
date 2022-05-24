@@ -73,11 +73,22 @@ const ProfileBalance = styled(Typography)(({ theme }) => ({
 const ProfileContainer = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.secondary.light,
   display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-  justifyContent: 'center',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-around',
   padding: '10px 16px',
   borderRadius: '8px',
+}));
+
+const ProfileSeparator = styled.span(({theme }) => ({
+  fontSize: '2.5rem',
+  alignSelf: 'center',
+  color: theme.palette.secondary.main,
+}));
+
+const InfoContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
 }));
 
 const AppContainer = styled.div({
@@ -106,12 +117,18 @@ export default function App() {
         <TopNav>
           <Logo withText />
           <ProfileContainer>
-            <ProfileName>Avi Levi</ProfileName>
-            <ProfileBalance>129 LC</ProfileBalance>
+            <InfoContainer>
+              <ProfileName>Avi Levi</ProfileName>
+              <ProfileBalance>129 LC</ProfileBalance>
+            </InfoContainer>
+            <ProfileSeparator>•</ProfileSeparator>
+            <InfoContainer>
+              <ProfileName>Account ID</ProfileName>
+              <ProfileBalance>211311411</ProfileBalance>
+            </InfoContainer>
           </ProfileContainer>
         </TopNav>
         {renderNav('/', 'Home', <HomeRoundedIcon />)}
-        {renderNav('transactions', 'Transactions', <BarChartRoundedIcon />)}
         {renderNav(
           '/lends-and-borrowings',
           'Lends & Borrowings',
