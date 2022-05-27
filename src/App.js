@@ -130,8 +130,8 @@ export default function App() {
         </TopNav>
         {renderNav('/', 'Home', <HomeRoundedIcon />)}
         {renderNav(
-          '/lends-and-borrowings',
-          'Lends & Borrowings',
+          '/lends-and-loans',
+          'Lends & Loans',
           <CurrencyExchangeRoundedIcon />,
         )}
         {renderNav('/profile', 'Profile', <PersonRoundedIcon />)}
