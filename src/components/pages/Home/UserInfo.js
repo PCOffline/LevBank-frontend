@@ -6,7 +6,7 @@ import styled from '@emotion/styled';
 
 const Container = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
-  padding: '24px 36px',
+  padding: '17px 36px',
   height: 'fit-content',
 }));
 
