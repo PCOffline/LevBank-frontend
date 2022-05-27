@@ -34,9 +34,9 @@ export default function UserInfo(props) {
       <Title>Account Summary</Title>
       <SubTitle>Balance</SubTitle>
       <Text>129 LC</Text>
-      <SubTitle>Lending</SubTitle>
+      <SubTitle>Lends</SubTitle>
       <Text>15 LC</Text>
-      <SubTitle>Borrowing</SubTitle>
+      <SubTitle>Loans</SubTitle>
       <Text>0 LC</Text>
     </Container>
   );
