@@ -1,30 +1,14 @@
-import {
-  ArrowDownwardRounded,
-  PersonPinCircleSharp,
-} from '@mui/icons-material';
-import { useState, useEffect, useRef } from 'react';
-import {
-  Box,
-  Typography,
-  Card,
-  MenuItem,
-  Select,
-  Divider,
-  Table,
-  TableRow,
-  TableBody,
-  Paper,
-  TableContainer,
-  TableCell,
-  TableHead,
-} from '@mui/material';
+import { useState } from 'react';
+import { Typography, Card } from '@mui/material';
 import styled from '@emotion/styled';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Table from '../../common/Table';
+import DateRange from '../../common/DateRange';
 
 const Container = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
-  padding: '24px 46px',
+  padding: '24px 30px 10px 30px',
   width: 'fit-content',
   display: 'flex',
   flexDirection: 'column',
@@ -38,131 +22,36 @@ const Title = styled(Typography)(({ theme }) => ({
   fontSize: '1rem',
 }));
 
-const SubTitle = styled(Typography)(({ theme }) => ({
-  fontWeight: 'bold',
-  fontSize: '1.5rem',
-  color: theme.palette.primary.dark,
-  margin: '8px 0px 0px',
-}));
+const transactionFields = [
+  { key: 'amount', name: 'Amount' },
+  { key: 'description', name: 'Description' },
+  { key: 'date', name: 'Date' },
+  { key: 'to', secondaryKey: 'from', name: 'To/From' },
+];
 
-const Text = styled(Typography)(({ theme }) => ({
-  fontSize: '1.2rem',
-  fontWeight: 500,
-  color: theme.palette.primary.main,
-}));
-
-const NegativeText = styled(Text)(({ theme }) => ({
-  color: 'darkred',
-}));
-
-const Transaction = styled(TableRow)(({ theme }) => ({
-  // display: 'flex',
-  // justifyContent: 'space-between',
-  // marginBottom: '12px',
-  // padding: '8px 16px 8px 0',
-  // width: '100%',
-  borderBottom: `1px solid ${theme.palette.primary.dark}`,
-  '&:last-child': { border: 0 },
-  '&:last-child td': { borderBottom: 0 },
-}));
-
-const RangeButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-  margin: '1rem 0',
-}));
-
-const RangeButton = styled(ToggleButton)(({ theme }) => ({
-  color: theme.palette.primary.dark,
-  '&.Mui-selected': {
-    color: theme.palette.primary.main,
-  },
-}));
-
-const StyledCell = styled(TableCell)(({ theme }) => ({
-  borderBottom: `1px solid ${theme.palette.primary.dark}`,
-  // borderRight: `1px solid ${theme.palette.primary.dark}`,
-  // '&:last-child': { borderRight: 0 },
-}));
-
-const getMinDateRange = (range) => {
-  const date = new Date();
-  date.setHours(0);
-  date.setMinutes(0);
-  date.setSeconds(0);
-  date.setMilliseconds(0);
-  if (range === 'week') date.setDate(date.getDate() - 7);
-  else if (range === 'month') date.setDate(date.getDate() - 30);
-  else if (range === 'year') date.setDate(date.getDate() - 365);
-
-  return date;
-};
-
-export default function UserInfo(props) {
+export default function Transactions(props) {
   const [range, setRange] = useState('week');
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
 
-  const handleRangeChange = (event, newRange) => {
-    if (newRange) setRange(newRange);
-  };
-
-  const renderTransaction = (transaction) => {
-    const TextType = transaction.to ? NegativeText : Text;
-
-    return (
-      <Transaction key={transaction.id}>
-        <StyledCell>
-          <TextType>
-            {transaction.to ? '-' : '+'}{transaction.amount} {props.currency}
-          </TextType>
-        </StyledCell>
-        <StyledCell>
-          <TextType>{transaction.description}</TextType>
-        </StyledCell>
-        <StyledCell>
-          <TextType>{transaction.date}</TextType>
-        </StyledCell>
-        <StyledCell>
-          <TextType>{transaction.to || transaction.from}</TextType>
-        </StyledCell>
-      </Transaction>
-    );
-  };
+  const toTableObject = (transaction) => ({
+    negative: transaction.to !== undefined,
+    amount: `${transaction.to ? '-' : '+'}${transaction.amount} ${
+      props.currency
+    }`,
+    date: transaction.date,
+    description: transaction.description,
+    to: transaction.to,
+    from: transaction.from,
+  });
 
   return (
     <Container>
       <Title>Transactions</Title>
-      <RangeButtonGroup value={range} exclusive onChange={handleRangeChange}>
-        <RangeButton value='week'>Week</RangeButton>
-        <RangeButton value='month'>Month</RangeButton>
-        <RangeButton value='year'>Year</RangeButton>
-      </RangeButtonGroup>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <Transaction>
-              <StyledCell>
-                <Text>Amount</Text>
-              </StyledCell>
-              <StyledCell>
-                <Text>Description</Text>
-              </StyledCell>
-              <StyledCell>
-                <Text>Date</Text>
-              </StyledCell>
-              <StyledCell>
-                <Text>To/From</Text>
-              </StyledCell>
-            </Transaction>
-          </TableHead>
-          <TableBody>
-            {props.transactions
-              .filter(
-                (transaction) =>
-                  new Date(transaction.date).getTime() >=
-                  getMinDateRange(range).getTime(),
-              )
-              .map((transaction) => renderTransaction(transaction))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <DateRange data={props.transactions} setData={setFilteredTransactions} />
+      <Table
+        fields={transactionFields}
+        data={filteredTransactions.map((transaction) => toTableObject(transaction))}
+      />
     </Container>
   );
 }
