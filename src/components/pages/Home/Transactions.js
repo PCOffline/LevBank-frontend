@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Typography, Card } from '@mui/material';
 import styled from '@emotion/styled';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Table from '../../common/Table';
 import DateRange from '../../common/DateRange';
 
@@ -30,7 +28,6 @@ const transactionFields = [
 ];
 
 export default function Transactions(props) {
-  const [range, setRange] = useState('week');
   const [filteredTransactions, setFilteredTransactions] = useState([]);
 
   const toTableObject = (transaction) => ({
