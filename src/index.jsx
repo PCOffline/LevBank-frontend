@@ -7,21 +7,21 @@ import Profile from './components/pages/Home/Profile';
 import Home from './components/pages/Home';
 import SignUp from './components/pages/SignUp';
 import Login from './components/pages/Login';
-import LendingsAndBorrowings from './components/pages/LendingsAndBorrowings';
+import LendsAndLoans from './components/pages/LendsAndLoans';
 import { createTheme, ThemeProvider } from '@mui/material';
 
 const mockTransactions = [
   {
     id: 'a1b2',
     amount: 50,
-    date: '2022-05-26',
+    date: '2022-05-27',
     description: "Avi's Birthday",
     from: 'Daniel',
   },
   {
     id: 'b1b2',
     amount: 15,
-    date: '2022-05-25',
+    date: '2022-05-22',
     description: 'Pizza',
     to: 'Osher Pizza',
   },
@@ -35,7 +35,7 @@ const mockTransactions = [
   {
     id: 'a1d2',
     amount: 14,
-    date: '2022-04-01',
+    date: '2022-04-29',
     description: 'Refund',
     from: 'AliExpress',
   },
@@ -62,7 +62,79 @@ const mockTransactions = [
   },
 ].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-let user = { balance: 50, name: 'Avi', lends: mockTransactions, borrowings: mockTransactions, transactions: mockTransactions };
+const mockLends = [{
+  id: 'aaaa',
+  amount: 10,
+  date: '2022-05-26',
+  description: "Bar's Restaurant Bill",
+  to: 'Bar',
+},
+{
+  id: 'aaa1',
+  amount: 15,
+  date: '2022-05-13',
+  description: 'Lend to Osher',
+  to: 'Osher',
+},
+{
+  id: 'aaa2',
+  amount: 22,
+  date: '2022-05-11',
+  description: 'Lend to Daniel',
+  to: 'Daniel',
+},
+{
+  id: 'aaa3',
+  amount: 14,
+  date: '2022-04-01',
+  description: 'Lend to David',
+  to: 'David',
+},
+{
+  id: 'aaa4',
+  amount: 14,
+  date: '2022-03-15',
+  description: 'Lend to Tom',
+  to: 'Tom',
+}];
+
+const mockLoans = [{
+  id: 'bbbb',
+  amount: 18,
+  date: '2022-05-26',
+  description: "Loan from Moshe",
+  from: 'Moshe',
+},
+{
+  id: 'bbb1',
+  amount: 15,
+  date: '2022-05-25',
+  description: 'Loan from Guy',
+  from: 'Guy',
+},
+{
+  id: 'bbb2',
+  amount: 11,
+  date: '2022-05-21',
+  description: 'Loan from Idan',
+  from: 'Idan',
+},
+{
+  id: 'bbb3',
+  amount: 12,
+  date: '2022-04-03',
+  description: 'Loan from Omer',
+  from: 'Omer',
+},
+{
+  id: 'bbb4',
+  amount: 6,
+  date: '2022-03-16',
+  description: 'Loan from Itay',
+  from: 'Itay',
+}];
+
+let user = { balance: 50, name: 'Avi', lends: mockLends, loans: mockLoans, transactions: mockTransactions };
 
 const theme = createTheme({
   palette: {
@@ -106,7 +178,7 @@ root.render(
           <Route path='/' element={<App />}>
             <Route index element={<Home user={user} />} />
             <Route path='transactions' element={<p>Hi</p>}  />
-            <Route path='lends-and-borrowings' element={<LendingsAndBorrowings user={user} />} />
+            <Route path='lends-and-loans' element={<LendsAndLoans user={user} currency='LC' />} />
             <Route path='profile' element={<Profile />} />
           </Route>
         </Routes>
