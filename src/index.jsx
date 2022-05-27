@@ -14,21 +14,21 @@ const mockTransactions = [
   {
     id: 'a1b2',
     amount: 50,
-    date: '2022-05-19',
+    date: '2022-05-26',
     description: "Avi's Birthday",
     from: 'Daniel',
   },
   {
     id: 'b1b2',
     amount: 15,
-    date: '2022-05-17',
+    date: '2022-05-25',
     description: 'Pizza',
     to: 'Osher Pizza',
   },
   {
     id: 'c1c2',
     amount: 22,
-    date: '2022-05-09',
+    date: '2022-05-18',
     description: 'Phone Bill',
     to: 'Pelephone',
   },
@@ -60,7 +60,7 @@ const mockTransactions = [
     description: "Daniel's Birthday",
     to: 'Daniel',
   },
-];
+].sort((a, b) => new Date(b.date) - new Date(a.date));
 
 let user = { balance: 50, name: 'Avi', lends: mockTransactions, borrowings: mockTransactions, transactions: mockTransactions };
 
@@ -84,6 +84,15 @@ const theme = createTheme({
       paper: '#c8facd',
     }
   },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      lg: 1375,
+      xl: 1536,
+    }
+  }
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
