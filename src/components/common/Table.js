@@ -47,16 +47,22 @@ export default function Table(props) {
           </StyledCell>
         ))}
         {buttons?.length &&
-          buttons.map((button) => (
-            <StyledCell key={button.text}>
-              <Button
-                variant='contained'
-                onClick={() => button.onClick?.(row, index, button)}
-              >
-                {button.text}
-              </Button>
-            </StyledCell>
-          ))}
+          buttons.map((button) => {
+            const showButton = button.isVisible ? button.isVisible(row) : true;
+
+            return (
+              <StyledCell key={button.text}>
+                {showButton && (
+                  <Button
+                    variant='contained'
+                    onClick={() => button.onClick?.(row, index, button)}
+                  >
+                    {button.text}
+                  </Button>
+                )}
+              </StyledCell>
+            );
+          })}
       </StyledRow>
     );
   };
@@ -72,7 +78,7 @@ export default function Table(props) {
               </StyledCell>
             ))}
             {buttons?.length &&
-              buttons.map((button) => <TableCell key={button.text} />)}
+              buttons.map((button) => <StyledCell key={button.text} />)}
           </TableRow>
         </TableHead>
         <TableBody>{data.map((row, index) => renderRow(row, index))}</TableBody>
