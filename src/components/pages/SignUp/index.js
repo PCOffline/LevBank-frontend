@@ -72,8 +72,8 @@ const StyledLogo = styled(Logo)({
 export default function SignUp() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [submitFirstPressed, setSubmitFirstPressed] = useState(false);
   const fieldsValidation = useRef({});
@@ -85,7 +85,7 @@ export default function SignUp() {
   const handleSubmit = () => {
     setSubmitFirstPressed(true);
     if (
-      Object.values(fieldsValidation).length &&
+      Object.values(fieldsValidation.current).length &&
       Object.values(fieldsValidation.current).every((value) => value)
     )
       // TODO: Send a request to the admin
@@ -124,10 +124,22 @@ export default function SignUp() {
                 required
               />
             </NameContainer>
-            <SignInput
+            <SignInput 
               label='Username'
               value={username}
-              setValue={setUsername}
+              setValue={(value) => setUsername(value.toLowerCase())}
+              customValidation={(value) => { 
+                if (value !== value.toLowerCase()) {
+                  return { valid: false, errorText: 'Username must be lowercase' };
+                }
+
+                if (value.length > 20) {
+                  return { valid: false, errorText: 'Username cannot be longer than 20 characters' };
+                }
+
+                // TODO: Check if username is taken
+                return { valid: true };
+              }}
               showError={submitFirstPressed}
               setIsValid={handleIsValidChange}
               type='name'

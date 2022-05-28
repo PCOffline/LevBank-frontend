@@ -82,7 +82,7 @@ export default function Login() {
   const handleSubmit = () => {
     setSubmitFirstPressed(true);
     if (
-      Object.values(fieldsValidation).length &&
+      Object.values(fieldsValidation.current).length &&
       Object.values(fieldsValidation.current).every((value) => value)
     )
       // TODO: Send a request to backend and redirect
@@ -104,7 +104,18 @@ export default function Login() {
             <SignInput
               label='Username'
               value={username}
-              setValue={setUsername}
+              setValue={(value) => setUsername(value.toLowerCase())}
+              customValidation={(value) => { 
+                if (value !== value.toLowerCase()) {
+                  return { valid: false, errorText: 'Username must be lowercase' };
+                }
+
+                if (value.length > 20) {
+                  return { valid: false, errorText: 'Username cannot be longer than 20 characters' };
+                }
+
+                return { valid: true }
+              }}
               showError={submitFirstPressed}
               setIsValid={handleIsValidChange}
               type='name'
