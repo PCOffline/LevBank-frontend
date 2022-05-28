@@ -22,7 +22,8 @@ export default function SignInput(props) {
     required,
     showError,
     customValidation,
-    setIsValid
+    setIsValid,
+    displayLabel,
   } = props;
 
   const validateName = (name) => /^[a-zA-Z0-9_\.]{4,}$/.test(name);
@@ -67,7 +68,7 @@ export default function SignInput(props) {
   return (
     <div>
       <StyledInput
-        label={label}
+        label={(displayLabel ?? true) ? label : undefined}
         value={value}
         onChange={(event) => setValue(event.target.value)}
         error={showError && !validate().valid}
