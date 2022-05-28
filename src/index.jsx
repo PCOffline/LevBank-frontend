@@ -8,6 +8,7 @@ import Home from './components/pages/Home';
 import SignUp from './components/pages/SignUp';
 import Login from './components/pages/Login';
 import LendsAndLoans from './components/pages/LendsAndLoans';
+import Admin from './components/pages/Admin';
 import { createTheme, ThemeProvider } from '@mui/material';
 
 const mockTransactions = [
@@ -134,8 +135,15 @@ const mockLoans = [{
   from: 'Itay',
 }];
 
-let user = { type: 'user', accountId: '211311411', balance: 50, firstName: 'Avi', lastName: 'Ron', lends: mockLends, loans: mockLoans, transactions: mockTransactions };
-let adminUser = { type: 'admin', pendingRequests: [] }
+const mockRequests = [{
+  username: 'cccc',
+  firstName: 'John',
+  lastName: 'Doe',
+}];
+
+let regularUser = { type: 'user', username: 'aviron3', balance: 50, firstName: 'Avi', lastName: 'Ron', lends: mockLends, loans: mockLoans, transactions: mockTransactions };
+let adminUser = { type: 'admin', pendingRequests: mockRequests, username: 'admin1' };
+const user = adminUser;
 
 const theme = createTheme({
   palette: {
@@ -180,12 +188,21 @@ root.render(
         <Routes>
           <Route path='/signup' element={<SignUp />} />
           <Route path='/login' element={<Login />} />
-          <Route path='/' element={<App />}>
-            <Route index element={<Home user={user} />} />
-            <Route path='transactions' element={<p>Hi</p>}  />
-            <Route path='lends-and-loans' element={<LendsAndLoans user={user} currency='LC' />} />
-            <Route path='profile' element={<Profile user={user} />} />
-          </Route>
+          {user.type === 'user' && (
+            <Route path='/' element={<App user={user} />}>
+              <Route index element={<Home user={user} />} />
+              <Route path='transactions' element={<p>Hi</p>} />
+              <Route
+                path='lends-and-loans'
+                element={<LendsAndLoans user={user} currency='LC' />}
+              />
+              <Route path='profile' element={<Profile user={user} />} />
+            </Route>
+          )}
+          {/* // TODO: Actual user logic */}
+          {user.type === 'admin' && (
+            <Route path='/' element={<Admin user={user} />} index />
+          )}
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

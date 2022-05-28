@@ -99,7 +99,9 @@ const AppContainer = styled.div({
 
 const ChatContainer = styled(Box)(({ theme }) => ({}));
 
-export default function App() {
+export default function App(props) {
+  const { user } = props;
+
   const renderNav = (route, text, icon) => {
     return (
       <NavItem to={route}>
@@ -119,12 +121,12 @@ export default function App() {
           <ProfileContainer>
             <InfoContainer>
               <ProfileName>Avi Levi</ProfileName>
-              <ProfileBalance>129 LC</ProfileBalance>
+              <ProfileBalance>{user.balance} LC</ProfileBalance>
             </InfoContainer>
             <ProfileSeparator>•</ProfileSeparator>
             <InfoContainer>
-              <ProfileName>Account ID</ProfileName>
-              <ProfileBalance>211311411</ProfileBalance>
+              <ProfileName>Username</ProfileName>
+              <ProfileBalance>{user.username}</ProfileBalance>
             </InfoContainer>
           </ProfileContainer>
         </TopNav>
@@ -135,7 +137,6 @@ export default function App() {
           <CurrencyExchangeRoundedIcon />,
         )}
         {renderNav('/profile', 'Profile', <PersonRoundedIcon />)}
-        <ChatContainer></ChatContainer>
       </NavBar>
       <Outlet />
     </AppContainer>
