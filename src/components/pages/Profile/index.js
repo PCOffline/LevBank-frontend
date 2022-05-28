@@ -25,7 +25,7 @@ const PageContainer = styled(Box)(({ theme }) => ({
     gap: '1rem',
   },
   [theme.breakpoints.down('lg')]: {
-    gap: 0,
+    gap: '1rem 0',
     width: 'fit-content',
   },
 }));
@@ -35,6 +35,9 @@ const MainContainer = styled(Box)(({ theme }) => ({
   justifyContent: 'center',
   height: 'fit-content',
   gap: '2rem',
+  [theme.breakpoints.down('lg')]: {
+    gap: '0 1rem',
+  },
 }));
 
 const ProfileContainer = styled(Card)(({ theme }) => ({
@@ -42,7 +45,7 @@ const ProfileContainer = styled(Card)(({ theme }) => ({
   padding: '8px 24px 17px 24px',
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'space-evenly',
+  justifyContent: 'start',
 }));
 
 const PasswordContainer = styled(Card)(({ theme }) => ({
@@ -62,6 +65,7 @@ const TitleContainer = styled(Box)(({ theme }) => ({
 
 const EditButton = styled(IconButton)(({ theme }) => ({
   color: theme.palette.primary.dark,
+  marginBottom: '8px',
 }));
 
 const Title = styled(Typography)(({ theme }) => ({
@@ -99,6 +103,7 @@ export default function Profile(props) {
   const { user } = props;
   const [firstName, setFirstName] = useState(user.firstName);
   const [lastName, setLastName] = useState(user.lastName);
+  const [username, setUsername] = useState(user.username);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [profileSubmitFirstPressed, setProfileSubmitFirstPressed] = useState(false);
@@ -118,7 +123,7 @@ export default function Profile(props) {
   const handleProfileSubmit = () => {
     setProfileSubmitFirstPressed(true);
     if (
-      Object.values(profileFieldsValidation).length &&
+      Object.values(profileFieldsValidation.current).length &&
       Object.values(profileFieldsValidation.current).every((value) => value)
     )
       // TODO: Send a request to the backend
@@ -128,7 +133,7 @@ export default function Profile(props) {
   const handlePasswordSubmit = () => {
     setPasswordSubmitFirstPressed(true);
     if (
-      Object.values(passwordFieldsValidation).length &&
+      Object.values(passwordFieldsValidation.current).length &&
       Object.values(passwordFieldsValidation.current).every((value) => value)
     )
       // TODO: Send a request to the backend
@@ -183,9 +188,8 @@ export default function Profile(props) {
               {editMode ? <CloseRoundedIcon /> : <EditRoundedIcon />}
             </EditButton>
           </TitleContainer>
-          <Label>Account ID</Label>
-          <Text>{user.accountId}</Text>
           <NameContainer>
+            {renderProfileValue('Username', username, setUsername)}
             {renderProfileValue('First name', firstName, setFirstName)}
             {renderProfileValue('Last name', lastName, setLastName)}
           </NameContainer>
@@ -219,7 +223,7 @@ export default function Profile(props) {
       <StyledInfoCard
         title='Profile Management Page'
         details={[
-          'You can view your profile information, such as your account ID and name.',
+          'You can view your profile information, such as your full name and username.',
           'You can change your name by clicking on the pencil icon, then typing your new name in the text boxes, and then clicking Save.',
           'You can also change your password in this page.',
           'For more information, contact an admin.'
