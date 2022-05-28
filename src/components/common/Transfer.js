@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Typography, Card, MenuItem, Select, TextField, Input, OutlinedInput } from '@mui/material';
+import { Typography, Card, Box, MenuItem, Select, TextField, Input, OutlinedInput } from '@mui/material';
 import styled from '@emotion/styled';
 import Button from './Button';
 
@@ -12,6 +12,10 @@ const Container = styled(Card)(({ theme }) => ({
   gap: '1em',
   minWidth: 'fit-content',
 }));
+
+const InputContainer = styled(Box)(({ theme }) => ({
+  width: '100%',
+}))
 
 const Title = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
@@ -31,21 +35,27 @@ export default function Transfer(props) {
 
   return (
     <Container>
-      <Title>{props.title}</Title>
-      <Label>{props.recipientText}</Label>
-      <TextField
-        placeholder={props.recipientPlaceholder || 'Receiving account'}
-        value={recipient}
-        onChange={(event) => setRecipient(event.target.value)}
-      />
-      <Label>Sum</Label>
-      <OutlinedInput
-        type='number'
-        placeholder='Sum'
-        value={amount}
-        onChange={(event) => setAmount(+event.target.value)}
-        inputProps={{ min: 1, max: props.user.balance }}
-      />
+      <Title>{props.title || 'Transfer'}</Title>
+      <InputContainer>
+        <Label>{props.recipientText || 'Receiver'}</Label>
+        <TextField
+          placeholder={props.recipientPlaceholder || 'Username'}
+          value={recipient}
+          onChange={(event) => setRecipient(event.target.value)}
+          fullWidth
+        />
+      </InputContainer>
+      <InputContainer>
+        <Label>Sum</Label>
+        <OutlinedInput
+          type='number'
+          placeholder='Sum'
+          value={amount}
+          onChange={(event) => setAmount(+event.target.value)}
+          inputProps={{ min: 1, max: props.user.balance }}
+          fullWidth
+        />
+      </InputContainer>
       <Button
         variant='contained'
         disabled={
