@@ -42,7 +42,7 @@ export default function Transactions(props) {
   });
 
   return (
-    <Container>
+    <Container className={props.className}>
       <Title>Transactions</Title>
       <DateRange data={props.transactions} setData={setFilteredTransactions} />
       <Table

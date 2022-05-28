@@ -42,7 +42,7 @@ const StyledNegativeButton = styled(NegativeButton)(({ theme }) => ({
 }));
 
 export default function Table(props) {
-  const { fields, data, buttons } = props;
+  const { fields, data, buttons, className } = props;
 
   const renderRow = (row, index) => {
     const TextType = row.negative ? NegativeText : Text;
@@ -57,7 +57,10 @@ export default function Table(props) {
         {buttons?.length &&
           buttons.map((button) => {
             const showButton = button.isVisible ? button.isVisible(row) : true;
-            const buttonText = typeof button.text === 'function' ? button.text(row, index, button) : button.text;
+            const buttonText =
+              typeof button.text === 'function'
+                ? button.text(row, index, button)
+                : button.text;
             const negative =
               typeof button.negative === 'function'
                 ? button.negative(row, index, button)
@@ -82,7 +85,7 @@ export default function Table(props) {
   };
 
   return (
-    <TableContainer component={Paper} elevation={0}>
+    <TableContainer component={Paper} elevation={0} className={className}>
       <MuiTable>
         <TableHead>
           <TableRow>
