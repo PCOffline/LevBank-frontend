@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react';
-import { Button, Input, Card, Typography, Box, TextField } from '@mui/material';
+import { Input, Card, Typography, Box, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
 import SignInput from '../../common/SignInput';
 import Logo from '../../common/Logo';
+import Button from '../../common/Button';
 
 const SignUpContainer = styled(Box)({
   display: 'flex',
@@ -29,14 +30,7 @@ const NameContainer = styled.div({
 });
 
 const StyledButton = styled(Button)({
-  color: '#fff',
-  fontWeight: 'bolder',
-  fontFamily: 'Public Sans',
-  textTransform: 'none',
-  padding: '8px 22px',
   fontSize: '0.9375rem',
-  borderRadius: '8px',
-  boxShadow: '0 8px 16px 0 rgb(0 171 85 / 24%)',
   height: '48px',
 });
 

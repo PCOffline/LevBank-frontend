@@ -2,7 +2,7 @@ import UserInfo from './UserInfo';
 import Transactions from './Transactions';
 import styled from '@emotion/styled';
 import { Box } from '@mui/material';
-import Transfer from './Transfer';
+import Transfer from '../../common/Transfer';
 
 const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
