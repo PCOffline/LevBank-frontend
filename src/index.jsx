@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Profile from './components/pages/Home/Profile';
+import Profile from './components/pages/Profile';
 import Home from './components/pages/Home';
 import SignUp from './components/pages/SignUp';
 import Login from './components/pages/Login';
@@ -134,7 +134,8 @@ const mockLoans = [{
   from: 'Itay',
 }];
 
-let user = { balance: 50, name: 'Avi', lends: mockLends, loans: mockLoans, transactions: mockTransactions };
+let user = { type: 'user', accountId: '211311411', balance: 50, firstName: 'Avi', lastName: 'Ron', lends: mockLends, loans: mockLoans, transactions: mockTransactions };
+let adminUser = { type: 'admin', pendingRequests: [] }
 
 const theme = createTheme({
   palette: {
@@ -154,6 +155,10 @@ const theme = createTheme({
     },
     background: {
       paper: '#c8facd',
+    },
+    error: {
+      main: '#b72136',
+      light: 'rgba(255, 72, 66, 0.16)',
     }
   },
   breakpoints: {
@@ -179,7 +184,7 @@ root.render(
             <Route index element={<Home user={user} />} />
             <Route path='transactions' element={<p>Hi</p>}  />
             <Route path='lends-and-loans' element={<LendsAndLoans user={user} currency='LC' />} />
-            <Route path='profile' element={<Profile />} />
+            <Route path='profile' element={<Profile user={user} />} />
           </Route>
         </Routes>
       </BrowserRouter>
