@@ -6,10 +6,10 @@ import {
   Paper,
   TableHead,
   TableBody,
-  Button,
   Typography,
 } from '@mui/material';
 import styled from '@emotion/styled';
+import Button, { NegativeButton } from '../common/Button';
 
 const StyledCell = styled(TableCell)(({ theme }) => ({
   borderColor: theme.palette.primary.dark,
@@ -33,6 +33,14 @@ const TitleText = styled(Text)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
 
+const StyledButton = styled(Button)(({ theme }) => ({
+  width: '100%',
+}));
+
+const StyledNegativeButton = styled(NegativeButton)(({ theme }) => ({
+  width: '100%',
+}));
+
 export default function Table(props) {
   const { fields, data, buttons } = props;
 
@@ -49,16 +57,22 @@ export default function Table(props) {
         {buttons?.length &&
           buttons.map((button) => {
             const showButton = button.isVisible ? button.isVisible(row) : true;
+            const buttonText = typeof button.text === 'function' ? button.text(row, index, button) : button.text;
+            const negative =
+              typeof button.negative === 'function'
+                ? button.negative(row, index, button)
+                : button.negative;
+              const ButtonType = negative ? StyledNegativeButton : StyledButton;
 
             return (
-              <StyledCell key={button.text}>
+              <StyledCell key={buttonText}>
                 {showButton && (
-                  <Button
+                  <ButtonType
                     variant='contained'
                     onClick={() => button.onClick?.(row, index, button)}
                   >
-                    {button.text}
-                  </Button>
+                    {buttonText}
+                  </ButtonType>
                 )}
               </StyledCell>
             );
