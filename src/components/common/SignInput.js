@@ -26,9 +26,9 @@ export default function SignInput(props) {
     displayLabel,
   } = props;
 
-  const validateName = (name) => /^[a-zA-Z0-9_\.]{4,}$/.test(name);
+  const validateName = (name) => /^[a-zA-Z0-9_\.]{2,}$/.test(name);
   const invalidNameText =
-    'must be at least 4 characters long, and can only contain letters, numbers, and underscores';
+    'must be at least 2 characters long, and can only contain letters, numbers, and underscores';
 
   const validatePassword = (pass) =>
     /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(pass);
