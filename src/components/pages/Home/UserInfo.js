@@ -29,15 +29,17 @@ const Text = styled(Typography)(({ theme }) => ({
 }));
 
 export default function UserInfo(props) {
+  const { user } = props;
+
   return (
     <Container>
       <Title>Account Summary</Title>
       <SubTitle>Balance</SubTitle>
-      <Text>129 LC</Text>
+      <Text>{user.balance} LC</Text>
       <SubTitle>Lends</SubTitle>
-      <Text>15 LC</Text>
+      <Text>{user.lends.reduce((acc, curr) => curr.amount + acc, 0)} LC</Text>
       <SubTitle>Loans</SubTitle>
-      <Text>0 LC</Text>
+      <Text>{user.loans.reduce((acc, curr) => curr.amount + acc, 0)} LC</Text>
     </Container>
   );
 }
