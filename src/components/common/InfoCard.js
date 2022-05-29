@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { Box, Typography } from '@mui/material';
+import { Link } from 'react-router-dom'; 
 import Button from './Button';
 
 const Container = styled(Box)(({ theme }) => ({
@@ -29,21 +30,21 @@ const Details = styled(Typography)(({ theme }) => ({
 
 
 export default function InfoCard(props) {
-  const { withChat = true, title, details, onChatClick } = props;
+  const { withChat = true, title, details } = props;
 
   return (
     <Container className={props.className}>
       <Box>
         <Title>{title}</Title>
         {Array.isArray(details)
-          ? details.map((detail) => (
-              <Details key={detail}>{detail}</Details>
-            ))
+          ? details.map((detail) => <Details key={detail}>{detail}</Details>)
           : details}
         {withChat && (
-          <Button variant='contained' onClick={onChatClick}>
-            Open Chat
-          </Button>
+          <Link to='/chat'>
+            <Button variant='contained'>
+              Open Chat
+            </Button>
+          </Link>
         )}
       </Box>
     </Container>

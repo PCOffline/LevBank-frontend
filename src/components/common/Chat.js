@@ -33,15 +33,15 @@ const Text = styled(Typography)(({ theme }) => ({
 
 const ChatGlobalContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'start',
   marginTop: '1rem',
-  gap: '1rem',
+  gap: '3rem',
+  height: '90%',
 }));
 
 const ChatUsersContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
   justifyContent: 'flex-start',
   alignItems: 'flex-start',
   width: 'fit-content',
@@ -61,11 +61,10 @@ const UserContainer = styled(Button)(({ theme }) => ({
 const ChatContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
   justifyContent: 'space-between',
   gap: '2rem',
-  maxHeight: '15rem',
   overflowY: 'auto',
+  width: '100%',
 }));
 
 const ChatMessagesContainer = styled(Box)(({ theme }) => ({
@@ -99,7 +98,7 @@ const mockMessages = [
 ];
 
 export default function Chat(props) {
-  const { users } = props;
+  const { users, className } = props;
   
   // TODO: Get data from backend with a request
   const [newMessage, setNewMessage] = useState('');
@@ -132,7 +131,7 @@ export default function Chat(props) {
   };
 
   return (
-    <Container>
+    <Container className={className}>
       <Title>Chat</Title>
       <SubTitle>Chatting with {userDisplayName(selectedUser)}</SubTitle>
       <ChatGlobalContainer>
