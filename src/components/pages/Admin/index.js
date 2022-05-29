@@ -45,6 +45,12 @@ const StyledInfoCard = styled(InfoCard)(({ theme }) => ({
   }
 }));
 
+const StyledChat = styled(Chat)(({ theme }) => ({
+  '& div': {
+    maxHeight: '17rem',
+  },
+}));
+
 const requestFields = [
   { key: 'firstName', name: 'First name' },
   { key: 'lastName', name: 'Last name' },
@@ -68,7 +74,7 @@ export default function Admin (props) {
     <Container>
       <StyledExchange />
       <UserSearch users={mockUsers} />
-      <Chat users={mockUsers} />
+      <StyledChat users={mockUsers} />
       <Requests>
         <Title>Pending Registration Requests</Title>
         <SubTitle>Total - {user.pendingRequests.length}</SubTitle>
