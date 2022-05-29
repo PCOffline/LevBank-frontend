@@ -1,13 +1,24 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+body,
+html,
+#root {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  margin: 0;
+  font-family: Assistant;
+  overflow-x: hidden;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+* {
+  font-family: 'Public Sans', sans-serif !important;
+}
+
+a {
+  text-decoration: none;
+}
+.MuiOutlinedInput-notchedOutline {
+  border: none;
+}
+.MuiInputBase-inputMultiline {
+  padding: 0.5rem !important;
 }
