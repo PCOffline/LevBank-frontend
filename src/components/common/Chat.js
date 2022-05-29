@@ -56,6 +56,7 @@ const UserContainer = styled(Button)(({ theme }) => ({
   paddingLeft: 0,
   width: '100%',
   textTransform: 'capitalize',
+  whiteSpace: 'nowrap',
 }));
 
 const ChatContainer = styled(Box)(({ theme }) => ({
