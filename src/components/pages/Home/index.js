@@ -53,7 +53,6 @@ export default function Home(props) {
           'You can also view the current exchange rates for the currencies you have selected.',
           'For more information, contact an administrator.'
         ]}
-        onChatClick={() => console.log('hello')}
       />
     </Container>
   );
