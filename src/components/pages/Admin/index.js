@@ -4,6 +4,8 @@ import Table from '../../common/Table';
 import styled from '@emotion/styled';
 import Exchange from '../Home/Exchange';
 import UserSearch from './UserSearch';
+import Chat from '../../common/Chat';
+import InfoCard from '../../common/InfoCard';
 
 const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -36,9 +38,11 @@ const SubTitle = styled(Typography)(({ theme }) => ({
   margin: '8px 0px 0px',
 }));
 
-const Text = styled(Typography)(({ theme }) => ({
-  fontSize: '1.1rem',
-  color: theme.palette.primary.main,
+const StyledInfoCard = styled(InfoCard)(({ theme }) => ({
+  width: '30%',
+  [theme.breakpoints.down('md')]: {
+    width: 'fit-content',
+  }
 }));
 
 const requestFields = [
@@ -51,13 +55,20 @@ const requestButtons = [
   { text: 'Reject', negative: true, onClick: () => console.log('Rejected') },
 ];
 
+const mockUsers = [
+  { username: 'aviron3', firstName: 'Avi', lastName: 'Ron', balance: 50 },
+  { username: 'danilev', firstName: 'Daniel', lastName: 'Lev', balance: 10 },
+  { username: 'gal555', firstName: 'Gal', lastName: 'Cohen', balance: 0 }
+];
+
 export default function Admin (props) {
   const { user } = props;
 
   return (
     <Container>
       <StyledExchange />
-      <UserSearch />
+      <UserSearch users={mockUsers} />
+      <Chat users={mockUsers} />
       <Requests>
         <Title>Pending Registration Requests</Title>
         <SubTitle>Total - {user.pendingRequests.length}</SubTitle>
@@ -67,6 +78,16 @@ export default function Admin (props) {
           data={user.pendingRequests}
         />
       </Requests>
+      <StyledInfoCard
+        title='Admin Menu'
+        details={[
+          'The admin menu allows you to manage the system and view vital information about it.',
+          'By typing a username in the "Manage Users", you can search for a specific user and edit their information - including their balance.',
+          'You can approve and reject users who have requested to register to the system. Their initial balance will be 10 LC.',
+          'The chat allows you to communicate with other users and provide support.',
+        ]}
+        withChat={false}
+      />
     </Container>
   );
 }

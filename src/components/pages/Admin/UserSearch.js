@@ -192,9 +192,6 @@ export default function UserSearch () {
             <IconButton onClick={handleUserDelete}>
               <DeleteRoundedIcon color='error' fontSize='large' />
             </IconButton>
-            <IconButton>
-              <ChatBubbleRoundedIcon color='primary' fontSize='large' />
-            </IconButton>
           </ButtonContainer>
         </UserContainer>
       )}
