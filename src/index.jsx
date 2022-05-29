@@ -9,6 +9,7 @@ import SignUp from './components/pages/SignUp';
 import Login from './components/pages/Login';
 import LendsAndLoans from './components/pages/LendsAndLoans';
 import Admin from './components/pages/Admin';
+import ChatPage from './components/pages/ChatPage';
 import { createTheme, ThemeProvider } from '@mui/material';
 
 const mockTransactions = [
@@ -142,8 +143,8 @@ const mockRequests = [{
 }];
 
 let regularUser = { type: 'user', username: 'aviron3', balance: 50, firstName: 'Avi', lastName: 'Ron', lends: mockLends, loans: mockLoans, transactions: mockTransactions };
-let adminUser = { type: 'admin', pendingRequests: mockRequests, username: 'admin1' };
-const user = adminUser;
+let adminUser = { type: 'admin', pendingRequests: mockRequests, username: 'admin1', firstName: 'Admin', lastName: '' };
+const user = regularUser;
 
 const theme = createTheme({
   palette: {
@@ -197,6 +198,7 @@ root.render(
                 element={<LendsAndLoans user={user} currency='LC' />}
               />
               <Route path='profile' element={<Profile user={user} />} />
+              <Route path='chat' element={<ChatPage users={[adminUser]} />} />
             </Route>
           )}
           {/* // TODO: Actual user logic */}
