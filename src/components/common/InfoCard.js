@@ -29,16 +29,22 @@ const Details = styled(Typography)(({ theme }) => ({
 
 
 export default function InfoCard(props) {
+  const { withChat = true, title, details, onChatClick } = props;
+
   return (
     <Container className={props.className}>
       <Box>
-      <Title>{props.title}</Title>
-      {Array.isArray(props.details)
-        ? props.details.map((detail) => <Details key={detail}>{detail}</Details>)
-        : props.details}
-      <Button variant='contained' onClick={props.onChatClick}>
-        Open Chat
-      </Button>
+        <Title>{title}</Title>
+        {Array.isArray(details)
+          ? details.map((detail) => (
+              <Details key={detail}>{detail}</Details>
+            ))
+          : details}
+        {withChat && (
+          <Button variant='contained' onClick={onChatClick}>
+            Open Chat
+          </Button>
+        )}
       </Box>
     </Container>
   );
