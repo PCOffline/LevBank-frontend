@@ -126,9 +126,7 @@ export default function Chat(props) {
     setChats((prevChats) => {
       const index = prevChats.indexOf(selectedUser);
       const newChats = clone(prevChats);
-      console.log('hi');
       newChats[index].chat.push({ text: newMessage, sender: 'self', date: new Date(), id: Math.random().toString(36).substring(7) });
-      console.log(newChats[index]);
       return newChats;
     });
   };
