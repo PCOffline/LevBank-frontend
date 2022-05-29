@@ -17,6 +17,7 @@ import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
 import CurrencyExchangeRoundedIcon from '@mui/icons-material/CurrencyExchangeRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
+import ChatRoundedIcon from '@mui/icons-material/ChatRounded';
 import Logo from './components/common/Logo';
 import FaceIcon from '@mui/icons-material/Face';
 
@@ -97,8 +98,6 @@ const AppContainer = styled.div({
   gap: '3em',
 });
 
-const ChatContainer = styled(Box)(({ theme }) => ({}));
-
 export default function App(props) {
   const { user } = props;
 
@@ -137,6 +136,7 @@ export default function App(props) {
           <CurrencyExchangeRoundedIcon />,
         )}
         {renderNav('/profile', 'Profile', <PersonRoundedIcon />)}
+        {renderNav('/chat', 'Chat', <ChatRoundedIcon />)}
       </NavBar>
       <Outlet />
     </AppContainer>
