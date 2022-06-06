@@ -144,7 +144,7 @@ const mockRequests = [{
 
 let regularUser = { type: 'user', username: 'aviron3', balance: 50, firstName: 'Avi', lastName: 'Ron', lends: mockLends, loans: mockLoans, transactions: mockTransactions };
 let adminUser = { type: 'admin', pendingRequests: mockRequests, username: 'admin1', firstName: 'Admin', lastName: '' };
-const user = regularUser;
+const user = adminUser;
 
 const theme = createTheme({
   palette: {
