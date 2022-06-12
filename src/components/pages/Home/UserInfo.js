@@ -1,8 +1,9 @@
 import { ArrowDownwardRounded } from '@mui/icons-material';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Typography, Card, MenuItem, Select } from '@mui/material';
 import SelectInput from '@mui/material/Select/SelectInput';
 import styled from '@emotion/styled';
+import { userContext } from '../../../ContextWrapper';
 
 const Container = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -29,17 +30,45 @@ const Text = styled(Typography)(({ theme }) => ({
 }));
 
 export default function UserInfo(props) {
-  const { user } = props;
+  const { user } = useContext(userContext);
+
+  console.log(user);
+
+  const translateRates = (lcValue) => {
+    if (props.currency === 'LC') return lcValue;
+    return lcValue * props.exchangeRates.ils * props.exchangeRates.lc;
+  };
 
   return (
     <Container>
       <Title>Account Summary</Title>
       <SubTitle>Balance</SubTitle>
-      <Text>{user.balance} LC</Text>
+      <Text>
+        {translateRates(user.balance)} {props.currency}
+      </Text>
       <SubTitle>Lends</SubTitle>
-      <Text>{user.lends.reduce((acc, curr) => curr.amount + acc, 0)} LC</Text>
+      <Text>
+        {translateRates(props.transactions.filter((transaction) => 
+          transaction.type === 'loan' &&
+          transaction.status === 'approved' &&
+          transaction.sender === user.username
+        ).reduce((acc, curr) => curr.amount + acc, 0))}{' '}
+        {props.currency}
+      </Text>
       <SubTitle>Loans</SubTitle>
-      <Text>{user.loans.reduce((acc, curr) => curr.amount + acc, 0)} LC</Text>
+      <Text>
+        {translateRates(
+          props.transactions
+            .filter(
+              (transaction) =>
+                transaction.type === 'loan' &&
+                transaction.status === 'approved' &&
+                transaction.recipient === user.username,
+            )
+            .reduce((acc, curr) => curr.amount + acc, 0),
+        )}{' '}
+        {props.currency}
+      </Text>
     </Container>
   );
 }

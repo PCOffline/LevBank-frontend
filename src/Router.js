@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { userContext } from './ContextWrapper';
 import { Route, BrowserRouter, Routes } from 'react-router-dom';
 import Profile from './components/pages/Profile';
@@ -15,18 +15,21 @@ import config from './config';
 
 export default function Router() {
   const { user, setUser } = useContext(userContext);
+  const [currency, setCurrency] = useState('LC');
 
   useEffect(() => {
+    const resetCookie = () => {
+      setUser(null);
+      Cookies.remove('connect.sid');
+      window.location.href = '/login';
+    };
+
     if (Cookies.get('connect.sid')) {
       axios.get(`${config.apiUri}/user/me`)
       .then((res) => setUser(res.data))
       // Handle not found
-      .catch(() => {
-        setUser(null);
-        Cookies.remove('connect.sid');
-        window.location.href = '/login';
-      });
-    }
+      .catch(() => resetCookie());
+    } else if (window.location.pathname !== '/login' && window.location.pathname !== '/register') resetCookie();
   }, []);
 
   return (
@@ -39,19 +42,19 @@ export default function Router() {
           </>
         )}
         {user?.type === 'client' && (
-          <Route path='/' element={<App />}>
-            <Route index element={<Home />} />
+          <Route path='/' element={<App currency={currency} setCurrency={setCurrency} />}>
+            <Route index element={<Home currency={currency} />} />
             <Route path='transactions' element={<p>Hi</p>} />
             <Route
               path='lends-and-loans'
-              element={<LendsAndLoans currency='LC' />}
+              element={<LendsAndLoans currency={currency} />}
             />
             <Route path='profile' element={<Profile />} />
             <Route path='chat' element={<ChatPage />} />
           </Route>
         )}
         {/* // TODO: Actual user logic */}
-        {user?.type === 'admin' && <Route path='/' element={<Admin />} index />}
+        {user?.type === 'admin' && <Route path='/' element={<Admin currency={currency} setCurrency={setCurrency} />} index />}
       </Routes>
     </BrowserRouter>
   );

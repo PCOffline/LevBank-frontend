@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Typography, Card, Box, MenuItem, Select, TextField, Input, OutlinedInput } from '@mui/material';
 import styled from '@emotion/styled';
 import Button from './Button';
+import { userContext } from '../../ContextWrapper';
 
 const Container = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -32,6 +33,7 @@ const Label = styled(Typography)(({ theme }) => ({
 export default function Transfer(props) {
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState(1);
+  const { user } = useContext(userContext);
 
   return (
     <Container>
@@ -52,7 +54,7 @@ export default function Transfer(props) {
           placeholder='Sum'
           value={amount}
           onChange={(event) => setAmount(+event.target.value)}
-          inputProps={{ min: 1, max: props.user.balance }}
+          inputProps={{ min: 1, max: user.balance }}
           fullWidth
         />
       </InputContainer>
@@ -60,7 +62,7 @@ export default function Transfer(props) {
         variant='contained'
         disabled={
           !recipient.trim() ||
-          amount > props.user.balance ||
+          amount > user.balance ||
           amount <= 0 ||
           !Number.isSafeInteger(amount)
         }

@@ -23,40 +23,12 @@ const Label = styled(Typography)(({ theme }) => ({
   margin: '8px 0px 0px',
 }));
 
-const mockResponses = [
-  { ils: 3.34, lc: 1 },
-  { ils: 3.34, lc: 1.01 },
-  { ils: 3.5, lc: 1.01 },
-  { ils: 3.2, lc: 1.05 },
-  { ils: 3.34, lc: 1.1 },
-  { ils: 3.4, lc: 1.12 },
-  { ils: 3.32, lc: 1.12 },
-];
-
-const defaultExchangeRates = { ils: 1, lc: 1 };
-
 export default function Exchange(props) {
-  const { className } = props;
+  const { className, exchangeRates } = props;
 
   const [lc, setLc] = useState(1);
   const [ils, setIls] = useState(1);
   const [usd, setUsd] = useState(1);
-  const [exchangeRates, setExchangeRates] = useState(defaultExchangeRates);
-
-  const refresh = () => {
-    // Send request to backend to retrieve exchange rates
-    const response =
-      mockResponses[Math.floor(Math.random() * mockResponses.length)];
-    console.log(response);
-    setExchangeRates(response);
-  };
-
-  useEffect(() => {
-    // every 30 seconds
-    refresh();
-    const interval = setInterval(refresh, 30000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     // calculate new values based on current lc

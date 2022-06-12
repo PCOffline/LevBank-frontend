@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   AppBar,
@@ -20,6 +20,7 @@ import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import ChatRoundedIcon from '@mui/icons-material/ChatRounded';
 import Logo from './components/common/Logo';
 import FaceIcon from '@mui/icons-material/Face';
+import { userContext } from './ContextWrapper';
 
 const NavBar = styled(List)(({ theme }) => ({
   flexDirection: 'column',
@@ -99,7 +100,7 @@ const AppContainer = styled.div({
 });
 
 export default function App(props) {
-  const { user } = props;
+  const { user } = useContext(userContext);
 
   const renderNav = (route, text, icon) => {
     return (
@@ -119,8 +120,8 @@ export default function App(props) {
           <Logo withText />
           <ProfileContainer>
             <InfoContainer>
-              <ProfileName>Avi Levi</ProfileName>
-              <ProfileBalance>{user.balance} LC</ProfileBalance>
+              <ProfileName>{`${user.firstName} ${user.lastName}`}</ProfileName>
+              <ProfileBalance>{`${user.balance} ${props.currency}`}</ProfileBalance>
             </InfoContainer>
             <ProfileSeparator>•</ProfileSeparator>
             <InfoContainer>

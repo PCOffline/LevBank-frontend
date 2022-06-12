@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import UserInfo from './UserInfo';
 import Transactions from './Transactions';
 import styled from '@emotion/styled';
@@ -5,6 +6,8 @@ import { Box } from '@mui/material';
 import Transfer from '../../common/Transfer';
 import InfoCard from '../../common/InfoCard';
 import Exchange from './Exchange';
+import axios from 'axios';
+import config from '../../../config';
 
 const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -35,16 +38,34 @@ const StyledInfoCard = styled(InfoCard)(({ theme }) => ({
 }));
 
 export default function Home(props) {
+  const [exchangeRates, setExchangeRates] = useState({ ils: 1, lc: 1 });
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => {
+    const refresh = async () => {
+      const rates = await axios.get(`${config.apiUri}/finance/exchange`)
+      .catch(() => {});
+
+      setExchangeRates(rates.data);
+    };
+    refresh();
+    const interval = setInterval(refresh, 1000 * 30);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    axios.get(`${config.apiUri}/finance/me`)
+    .then(res => setTransactions(res.data))
+    .catch(() => {});
+  }, []);
+
   return (
     <Container>
-      <UserInfo user={props.user} />
-      <Transfer user={props.user} />
-      <Exchange />
-      <StyledTransactions
-        user={props.user}
-        transactions={props.user.transactions}
-        currency='LC'
-      />
+      <UserInfo exchangeRates={exchangeRates} currency={props.currency} transactions={transactions} />
+      <Transfer exchangeRates={exchangeRates} currency={props.currency} />
+      <Exchange exchangeRates={exchangeRates} />
+      <StyledTransactions exchangeRates={exchangeRates} currency={props.currency} transactions={transactions} />
       <StyledInfoCard
         title='Home Page'
         details={[
