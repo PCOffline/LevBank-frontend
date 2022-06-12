@@ -1,10 +1,12 @@
 import { useState, useRef } from 'react';
 import { Input, Card, Typography, Box, TextField } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import SignInput from '../../common/SignInput';
 import Logo from '../../common/Logo';
 import Button from '../../common/Button';
+import axios from 'axios';
+import config from '../../../config';
 
 const SignUpContainer = styled(Box)({
   display: 'flex',
@@ -69,6 +71,10 @@ const StyledLogo = styled(Logo)({
   padding: '20px',
 });
 
+const ErrorText = styled.p(({ theme }) => ({
+  color: theme.palette.error.main,
+}));
+
 export default function SignUp() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -76,8 +82,10 @@ export default function SignUp() {
   const [username, setUsername] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [submitFirstPressed, setSubmitFirstPressed] = useState(false);
+  const [error, setError] = useState('');
   const fieldsValidation = useRef({});
-
+  const navigate = useNavigate();
+  
   const handleIsValidChange = (label, value) => {
     fieldsValidation.current[label] = value;
   };
@@ -88,8 +96,9 @@ export default function SignUp() {
       Object.values(fieldsValidation.current).length &&
       Object.values(fieldsValidation.current).every((value) => value)
     )
-      // TODO: Send a request to the admin
-      console.log('hi');
+       axios.post(`${config.apiUri}/auth/register`, { firstName, lastName, username, password })
+      .then(() => navigate('/login'))
+      .catch((err) => setError(err.response.data));
   };
 
   return (
@@ -124,11 +133,11 @@ export default function SignUp() {
                 required
               />
             </NameContainer>
-            <SignInput 
+            <SignInput
               label='Username'
               value={username}
               setValue={(value) => setUsername(value.toLowerCase())}
-              customValidation={(value) => { 
+              customValidation={(value) => {
                 if (value !== value.toLowerCase()) {
                   return { valid: false, errorText: 'Username must be lowercase' };
                 }
@@ -176,6 +185,7 @@ export default function SignUp() {
               Sign Up
             </StyledButton>
           </FormContainer>
+          {error && <ErrorText>{error}</ErrorText>}
           <LoginText color='textPrimary'>
             Already have an account?
             <Link to='/login'>
