@@ -1,10 +1,13 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import { Typography, Box, TextField } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import SignInput from '../../common/SignInput';
 import Logo from '../../common/Logo';
 import Button from '../../common/Button';
+import axios from 'axios';
+import { userContext } from '../../../ContextWrapper';
+import config from '../../../config';
 
 const PageContainer = styled(Box)({
   display: 'flex',
@@ -69,11 +72,18 @@ const StyledLogo = styled(Logo)({
   padding: '20px',
 });
 
+const ErrorText = styled.p(({ theme }) => ({
+  color: theme.palette.error.main,
+}));
+
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [submitFirstPressed, setSubmitFirstPressed] = useState(false);
   const fieldsValidation = useRef({});
+  const navigate = useNavigate();
+  const { setUser } = useContext(userContext);
 
   const handleIsValidChange = (label, value) => {
     fieldsValidation.current[label] = value;
@@ -85,8 +95,13 @@ export default function Login() {
       Object.values(fieldsValidation.current).length &&
       Object.values(fieldsValidation.current).every((value) => value)
     )
-      // TODO: Send a request to backend and redirect
-      console.log('hi');
+      axios
+        .post(`${config.apiUri}/auth/login`, { username, password })
+        .then((res) => {
+          setUser(res.data);
+          return navigate('/');
+        })
+        .catch((err) => setError(err.response.data));
   };
 
   return (
@@ -105,7 +120,7 @@ export default function Login() {
               label='Username'
               value={username}
               setValue={(value) => setUsername(value.toLowerCase())}
-              customValidation={(value) => { 
+              customValidation={(value) => {
                 if (value !== value.toLowerCase()) {
                   return { valid: false, errorText: 'Username must be lowercase' };
                 }
@@ -114,7 +129,7 @@ export default function Login() {
                   return { valid: false, errorText: 'Username cannot be longer than 20 characters' };
                 }
 
-                return { valid: true }
+                return { valid: true };
               }}
               showError={submitFirstPressed}
               setIsValid={handleIsValidChange}
@@ -139,6 +154,7 @@ export default function Login() {
               Login
             </StyledButton>
           </FormContainer>
+          {error && <ErrorText>{error}</ErrorText>}
           <LoginText color='textPrimary'>
             Don't have an account?
             <Link to='/signup'>

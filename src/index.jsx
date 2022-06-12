@@ -1,150 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
 import './index.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Profile from './components/pages/Profile';
-import Home from './components/pages/Home';
-import SignUp from './components/pages/SignUp';
-import Login from './components/pages/Login';
-import LendsAndLoans from './components/pages/LendsAndLoans';
-import Admin from './components/pages/Admin';
-import ChatPage from './components/pages/ChatPage';
+import ContextWrapper from './ContextWrapper';
 import { createTheme, ThemeProvider } from '@mui/material';
-
-const mockTransactions = [
-  {
-    id: 'a1b2',
-    amount: 50,
-    date: '2022-05-27',
-    description: "Avi's Birthday",
-    from: 'Daniel',
-  },
-  {
-    id: 'b1b2',
-    amount: 15,
-    date: '2022-05-22',
-    description: 'Pizza',
-    to: 'Osher Pizza',
-  },
-  {
-    id: 'c1c2',
-    amount: 22,
-    date: '2022-05-18',
-    description: 'Phone Bill',
-    to: 'Pelephone',
-  },
-  {
-    id: 'a1d2',
-    amount: 14,
-    date: '2022-04-29',
-    description: 'Refund',
-    from: 'AliExpress',
-  },
-  {
-    id: 'c1d2',
-    amount: 14,
-    date: '2022-03-15',
-    description: 'Coffe Cup',
-    to: 'AliExpress',
-  },
-  {
-    id: 'c1b2',
-    amount: 25,
-    date: '2022-03-11',
-    description: 'T-Shirt',
-    to: 'Delta',
-  },
-  {
-    id: 'd1a2',
-    amount: 11,
-    date: '2021-12-01',
-    description: "Daniel's Birthday",
-    to: 'Daniel',
-  },
-].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-const mockLends = [{
-  id: 'aaaa',
-  amount: 10,
-  date: '2022-05-26',
-  description: "Bar's Restaurant Bill",
-  to: 'Bar',
-},
-{
-  id: 'aaa1',
-  amount: 15,
-  date: '2022-05-13',
-  description: 'Lend to Osher',
-  to: 'Osher',
-},
-{
-  id: 'aaa2',
-  amount: 22,
-  date: '2022-05-11',
-  description: 'Lend to Daniel',
-  to: 'Daniel',
-},
-{
-  id: 'aaa3',
-  amount: 14,
-  date: '2022-04-01',
-  description: 'Lend to David',
-  to: 'David',
-},
-{
-  id: 'aaa4',
-  amount: 14,
-  date: '2022-03-15',
-  description: 'Lend to Tom',
-  to: 'Tom',
-}];
-
-const mockLoans = [{
-  id: 'bbbb',
-  amount: 18,
-  date: '2022-05-26',
-  description: "Loan from Moshe",
-  from: 'Moshe',
-},
-{
-  id: 'bbb1',
-  amount: 15,
-  date: '2022-05-25',
-  description: 'Loan from Guy',
-  from: 'Guy',
-},
-{
-  id: 'bbb2',
-  amount: 11,
-  date: '2022-05-21',
-  description: 'Loan from Idan',
-  from: 'Idan',
-},
-{
-  id: 'bbb3',
-  amount: 12,
-  date: '2022-04-03',
-  description: 'Loan from Omer',
-  from: 'Omer',
-},
-{
-  id: 'bbb4',
-  amount: 6,
-  date: '2022-03-16',
-  description: 'Loan from Itay',
-  from: 'Itay',
-}];
-
-const mockRequests = [{
-  username: 'cccc',
-  firstName: 'John',
-  lastName: 'Doe',
-}];
-
-let regularUser = { type: 'user', username: 'aviron3', balance: 50, firstName: 'Avi', lastName: 'Ron', lends: mockLends, loans: mockLoans, transactions: mockTransactions };
-let adminUser = { type: 'admin', pendingRequests: mockRequests, username: 'admin1', firstName: 'Admin', lastName: '' };
-const user = adminUser;
+import axios from 'axios';
+import Router from './Router';
 
 const theme = createTheme({
   palette: {
@@ -181,32 +41,17 @@ const theme = createTheme({
   }
 });
 
+// To make sure to send cookies in every request
+axios.defaults.withCredentials = true;
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <Routes>
-          <Route path='/signup' element={<SignUp />} />
-          <Route path='/login' element={<Login />} />
-          {user.type === 'user' && (
-            <Route path='/' element={<App user={user} />}>
-              <Route index element={<Home user={user} />} />
-              <Route path='transactions' element={<p>Hi</p>} />
-              <Route
-                path='lends-and-loans'
-                element={<LendsAndLoans user={user} currency='LC' />}
-              />
-              <Route path='profile' element={<Profile user={user} />} />
-              <Route path='chat' element={<ChatPage users={[adminUser]} />} />
-            </Route>
-          )}
-          {/* // TODO: Actual user logic */}
-          {user.type === 'admin' && (
-            <Route path='/' element={<Admin user={user} />} index />
-          )}
-        </Routes>
-      </BrowserRouter>
+      <ContextWrapper>
+        <Router />
+      </ContextWrapper>
     </ThemeProvider>
   </React.StrictMode>,
 );
