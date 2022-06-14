@@ -30,6 +30,10 @@ const Label = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }))
 
+const ErrorText = styled.p(({ theme }) => ({
+  color: theme.palette.error.main,
+}));
+
 export default function Transfer(props) {
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState(1);
@@ -48,13 +52,13 @@ export default function Transfer(props) {
         />
       </InputContainer>
       <InputContainer>
-        <Label>Sum</Label>
+        <Label>Sum ({props.currency})</Label>
         <OutlinedInput
           type='number'
           placeholder='Sum'
           value={amount}
           onChange={(event) => setAmount(+event.target.value)}
-          inputProps={{ min: 1, max: user.balance }}
+          inputProps={{ min: 1, max: props.currency === 'LC' ? user.balance : user.balance * exchangeRates.ils * exchaneRates.lc }}
           fullWidth
         />
       </InputContainer>
@@ -70,6 +74,7 @@ export default function Transfer(props) {
       >
         {props.buttonText || 'Send'}
       </Button>
+      {props.error && <ErrorText>{props.error}</ErrorText>}
     </Container>
   );
 }

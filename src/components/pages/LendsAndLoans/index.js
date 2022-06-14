@@ -118,6 +118,7 @@ export default function LendsAndLoans(props) {
         <Transfer
           title={`New Lend`}
           recipientText='Username'
+          exchangeRates={props.exchangeRates}
           buttonText='Lend'
           user={user}
           onClick={() => console.log('hello')}
@@ -127,6 +128,7 @@ export default function LendsAndLoans(props) {
           recipientText='Username'
           buttonText='Request'
           user={user}
+          exchangeRates={props.exchangeRates}
           onClick={() => console.log('hello')}
         />
         {/* </MainContainer> */}

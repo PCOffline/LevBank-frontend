@@ -7,6 +7,8 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import ChatBubbleRoundedIcon from '@mui/icons-material/ChatBubbleRounded';
 import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
+import config from '../../../config';
+import axios from 'axios';
 
 const MIN_USER_LENGTH = 4;
 
@@ -58,15 +60,9 @@ const NegativeText = styled(Typography)(({ theme }) => ({
   color: theme.palette.error.main,
 }));
 
-const mockUsers = [
-  { username: 'aviron3', firstName: 'Avi', lastName: 'Ron', balance: 50 },
-  { username: 'danilev', firstName: 'Daniel', lastName: 'Lev', balance: 10 },
-  { username: 'gal555', firstName: 'Gal', lastName: 'Cohen', balance: 0 }
-];
-
-export default function UserSearch () {
+export default function UserSearch (props) {
   const [query, setQuery] = useState('');
-  const [username, setUsername] = useState('');
+  const [newUsername, setNewUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [balance, setBalance] = useState(0);
@@ -79,21 +75,22 @@ export default function UserSearch () {
     setShowUser(false);
     setFirstName('');
     setLastName('');
-    setUsername('');
+    setNewUsername('');
     setBalance(0);
   };
 
   const handleSearch = () => {
-    const response = mockUsers.find((user) => user.username === query);
-
+    const response = props.users.find((user) => user.username === query);
+    
     if (!response) {
+      console.log(props.users);
       setShowSearchError(true);
       clearUser();
       return;
     }
 
     setShowSearchError(false);
-    setUsername(response.username);
+    setNewUsername(response.username);
     setFirstName(response.firstName);
     setLastName(response.lastName);
     setBalance(response.balance);
@@ -105,25 +102,24 @@ export default function UserSearch () {
   };
 
   const handleUserSave = () => {
-    console.log(fieldsValidation.current);
-
     setSaveFirstPressed(true);
     if (
       Object.values(fieldsValidation.current).length &&
       Object.values(fieldsValidation.current).every((value) => value)
     ) {
-      // TODO: Send a request to the backend
-      console.log('hi');
-      const index = mockUsers.findIndex((user) => user.username === query);
-      console.log(typeof balance);
-      mockUsers[index] = { username, firstName, lastName, balance };
+        axios.put(`${config.apiUri}/user/${query}`, { firstName, lastName, balance: +balance, newUsername }).then((res) => {
+        const index = props.users.findIndex((user) => user.username === query);
+        const newUsers = [...props.users];
+        newUsers[index] = { ...newUsers[index], ...res.data };
+        props.setUsers(newUsers);
+      });
     }
   };
 
   const handleUserDelete = () => {
     // TODO: Send a request to the backend
     console.log('boom');
-    mockUsers.splice(mockUsers.findIndex((user) => user.username === query), 1);
+    props.users.splice(props.users.findIndex((user) => user.username === query), 1);
     clearUser();
   };
 
@@ -172,7 +168,7 @@ export default function UserSearch () {
             {renderUserValue('Last name', lastName, setLastName)}
           </InputsContainer>
           <InputsContainer>
-            {renderUserValue('Username', username, setUsername)}
+            {renderUserValue('Username', newUsername, setNewUsername)}
             <Box>
               <Label>Balance</Label>
               <OutlinedInput

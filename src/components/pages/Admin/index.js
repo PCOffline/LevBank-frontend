@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Box, Card, OutlinedInput, Typography } from '@mui/material';
 import Table from '../../common/Table';
 import styled from '@emotion/styled';
@@ -6,6 +6,9 @@ import Exchange from '../Home/Exchange';
 import UserSearch from './UserSearch';
 import Chat from '../../common/Chat';
 import InfoCard from '../../common/InfoCard';
+import { userContext } from '../../../ContextWrapper';
+import axios from 'axios';
+import config from '../../../config';
 
 const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -61,27 +64,50 @@ const requestButtons = [
   { text: 'Reject', negative: true, onClick: () => console.log('Rejected') },
 ];
 
-const mockUsers = [
-  { username: 'aviron3', firstName: 'Avi', lastName: 'Ron', balance: 50 },
-  { username: 'danilev', firstName: 'Daniel', lastName: 'Lev', balance: 10 },
-  { username: 'gal555', firstName: 'Gal', lastName: 'Cohen', balance: 0 }
-];
+export default function Admin () {
+  const [users, setUsers] = useState([]);
+  const [exchangeRates, setExchangeRates] = useState({ ils: 1, lc: 1 });
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [requestsError, setRequestsError] = useState(null);
 
-export default function Admin (props) {
-  const { user } = props;
+  useEffect(() => {
+    axios.get(`${config.apiUri}/user/requests`)
+      .then(res => setPendingRequests(res.data))
+      .catch(err => setRequestsError(err.response.data));
+  }, []);
+
+  useEffect(() => {
+    const refresh = async () => {
+      const rates = await axios
+        .get(`${config.apiUri}/finance/exchange`)
+        .catch(() => {}, []);
+
+      setExchangeRates(rates.data);
+    };
+    refresh();
+    const interval = setInterval(refresh, 1000 * 30);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    axios.get(`${config.apiUri}/user`)
+      .then(res => setUsers(res.data))
+      .catch(() => {});
+  }, []);
 
   return (
     <Container>
-      <StyledExchange />
-      <UserSearch users={mockUsers} />
-      <StyledChat users={mockUsers} />
-      <Requests>
+      <StyledExchange exchangeRates={exchangeRates} />
+      <UserSearch users={users} setUsers={setUsers} />
+      {/* <StyledChat users={users} /> */}
+      <Requests error={requestsError}>
         <Title>Pending Registration Requests</Title>
-        <SubTitle>Total - {user.pendingRequests.length}</SubTitle>
+        <SubTitle>Total - {pendingRequests.length}</SubTitle>
         <Table
           fields={requestFields}
           buttons={requestButtons}
-          data={user.pendingRequests}
+          data={pendingRequests}
         />
       </Requests>
       <StyledInfoCard

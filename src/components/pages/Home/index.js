@@ -40,11 +40,13 @@ const StyledInfoCard = styled(InfoCard)(({ theme }) => ({
 export default function Home(props) {
   const [exchangeRates, setExchangeRates] = useState({ ils: 1, lc: 1 });
   const [transactions, setTransactions] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const refresh = async () => {
-      const rates = await axios.get(`${config.apiUri}/finance/exchange`)
-      .catch(() => {});
+      const rates = await axios
+        .get(`${config.apiUri}/finance/exchange`)
+        .catch(() => {}, []);
 
       setExchangeRates(rates.data);
     };
@@ -60,10 +62,15 @@ export default function Home(props) {
     .catch(() => {});
   }, []);
 
+  const handleTransfer = (recipient, amount) => {
+    axios.post(`${config.apiUri}/finance/transfer`, { recipient, amount })
+    .catch((err) => setError(err.response.data));
+  };
+
   return (
     <Container>
       <UserInfo exchangeRates={exchangeRates} currency={props.currency} transactions={transactions} />
-      <Transfer exchangeRates={exchangeRates} currency={props.currency} />
+      <Transfer exchangeRates={exchangeRates} currency={props.currency} onClick={handleTransfer} error={error} />
       <Exchange exchangeRates={exchangeRates} />
       <StyledTransactions exchangeRates={exchangeRates} currency={props.currency} transactions={transactions} />
       <StyledInfoCard
