@@ -62,6 +62,7 @@ const NegativeText = styled(Typography)(({ theme }) => ({
 
 export default function UserSearch (props) {
   const [query, setQuery] = useState('');
+  const [user, setUser] = useState(null);
   const [newUsername, setNewUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -72,6 +73,7 @@ export default function UserSearch (props) {
   const fieldsValidation = useRef({});
 
   const clearUser = () => {
+    setUser(null);
     setShowUser(false);
     setFirstName('');
     setLastName('');
@@ -80,16 +82,16 @@ export default function UserSearch (props) {
   };
 
   const handleSearch = () => {
-    const response = props.users.find((user) => user.username === query);
-    
+    const response = props.users.find((queryUser) => queryUser.username === query);
+
     if (!response) {
-      console.log(props.users);
       setShowSearchError(true);
       clearUser();
       return;
-    }
+    };
 
     setShowSearchError(false);
+    setUser(response);
     setNewUsername(response.username);
     setFirstName(response.firstName);
     setLastName(response.lastName);
@@ -107,20 +109,29 @@ export default function UserSearch (props) {
       Object.values(fieldsValidation.current).length &&
       Object.values(fieldsValidation.current).every((value) => value)
     ) {
-        axios.put(`${config.apiUri}/user/${query}`, { firstName, lastName, balance: +balance, newUsername }).then((res) => {
-        const index = props.users.findIndex((user) => user.username === query);
-        const newUsers = [...props.users];
-        newUsers[index] = { ...newUsers[index], ...res.data };
-        props.setUsers(newUsers);
-      });
+        axios
+          .put(`${config.apiUri}/user/${user.username}`, { firstName, lastName, balance: +balance, newUsername })
+          .then((res) => {
+            const index = props.users.indexOf(user);
+            props.setUsers((prevUsers) => {
+              const newUsers = [...prevUsers];
+              newUsers[index] = { ...newUsers[index], ...res.data };
+              return newUsers;
+            });
+          });
     }
   };
 
   const handleUserDelete = () => {
-    // TODO: Send a request to the backend
-    console.log('boom');
-    props.users.splice(props.users.findIndex((user) => user.username === query), 1);
-    clearUser();
+    axios.delete(`${config.apiUri}/user/${user}`)
+    .then(() => {
+      props.setUsers((prevUsers) => {
+        const newUsers = [...prevUsers];
+        newUsers.splice(props.users.indexOf(user), 1);
+        return newUsers;
+      });
+      clearUser();
+    });
   };
 
   const renderUserValue = (label, value, setValue) => (
@@ -193,5 +204,4 @@ export default function UserSearch (props) {
       )}
     </Container>
   );
-
 };
