@@ -8,8 +8,9 @@ import Chat from '../../common/Chat';
 import InfoCard from '../../common/InfoCard';
 import axios from 'axios';
 import config from '../../../config';
+import { LogoutButton } from '../../common/Button';
 
-const Container = styled(Box)(({ theme }) => ({
+const ContentContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexWrap: 'wrap',
   padding: '2rem 3rem',
@@ -41,7 +42,7 @@ const SubTitle = styled(Typography)(({ theme }) => ({
 }));
 
 const StyledInfoCard = styled(InfoCard)(({ theme }) => ({
-  width: '30%',
+  width: '27%',
   [theme.breakpoints.down('md')]: {
     width: 'fit-content',
   }
@@ -53,21 +54,57 @@ const StyledChat = styled(Chat)(({ theme }) => ({
   },
 }));
 
+const StyledLogoutButton = styled(LogoutButton)(({ theme }) => ({
+  position: 'absolute',
+  right: '1rem',
+  top: '1rem',
+}));
+
 const requestFields = [
   { key: 'firstName', name: 'First name' },
   { key: 'lastName', name: 'Last name' },
   { key: 'username', name: 'Username' },
 ];
-const requestButtons = [
-  { text: 'Approve', onClick: (row, index, button) => console.log('Approved', row) },
-  { text: 'Reject', negative: true, onClick: () => console.log('Rejected') },
-];
 
 export default function Admin () {
   const [users, setUsers] = useState([]);
-  const [exchangeRates, setExchangeRates] = useState({ ils: 1, lc: 1 });
   const [pendingRequests, setPendingRequests] = useState([]);
   const [requestsError, setRequestsError] = useState(null);
+
+  const requestButtons = [
+    {
+      text: 'Approve',
+      onClick: (row, index) => {
+        axios
+          .put(`${config.apiUri}/user/approve`, { username: row.username })
+          .then((user) => {
+            setPendingRequests((prevUsers) => {
+              const newUsers = [...prevUsers];
+              newUsers.splice(index, 1);
+              return newUsers;
+            });
+            setUsers((prevRequests) => [...prevRequests, user]);
+          })
+          .catch((err) => setRequestsError(err));
+      },
+    },
+    {
+      text: 'Reject',
+      negative: true,
+      onClick: (row, index) => {
+        axios
+          .delete(`${config.apiUri}/user/${row.username}`)
+          .then(() =>
+            setPendingRequests((prevUsers) => {
+              const newUsers = [...prevUsers];
+              newUsers.splice(index, 1);
+              return newUsers;
+            }),
+          )
+          .catch((err) => setRequestsError(err));
+      },
+    },
+  ];
 
   useEffect(() => {
     axios.get(`${config.apiUri}/user/requests`)
@@ -82,28 +119,32 @@ export default function Admin () {
   }, []);
 
   return (
+    <>
+      <StyledLogoutButton />
+      <ContentContainer>
         <StyledExchange />
-      <UserSearch users={users} setUsers={setUsers} />
-      {/* <StyledChat users={users} /> */}
-      <Requests error={requestsError}>
-        <Title>Pending Registration Requests</Title>
-        <SubTitle>Total - {pendingRequests.length}</SubTitle>
-        <Table
-          fields={requestFields}
-          buttons={requestButtons}
-          data={pendingRequests}
+        <UserSearch users={users} setUsers={setUsers} />
+        {/* <StyledChat users={users} /> */}
+        <Requests error={requestsError}>
+          <Title>Pending Registration Requests</Title>
+          <SubTitle>Total - {pendingRequests.length}</SubTitle>
+          <Table
+            fields={requestFields}
+            buttons={requestButtons}
+            data={pendingRequests}
+          />
+        </Requests>
+        <StyledInfoCard
+          title='Admin Menu'
+          details={[
+            'The admin menu allows you to manage the system and view vital information about it.',
+            'By typing a username in the "Manage Users", you can search for a specific user and edit their information - including their balance.',
+            'You can approve and reject users who have requested to register to the system. Their initial balance will be 0 LC.',
+            'The chat allows you to communicate with other users and provide support.',
+          ]}
+          withChat={false}
         />
-      </Requests>
-      <StyledInfoCard
-        title='Admin Menu'
-        details={[
-          'The admin menu allows you to manage the system and view vital information about it.',
-          'By typing a username in the "Manage Users", you can search for a specific user and edit their information - including their balance.',
-          'You can approve and reject users who have requested to register to the system. Their initial balance will be 10 LC.',
-          'The chat allows you to communicate with other users and provide support.',
-        ]}
-        withChat={false}
-      />
-    </Container>
+      </ContentContainer>
+    </>
   );
 }
