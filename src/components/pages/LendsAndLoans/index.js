@@ -88,14 +88,14 @@ export default function LendsAndLoans(props) {
     if (currency === 'LC') return lcValue;
     return (lcValue * exchangeRates.ils * exchangeRates.lc).toFixed(2);
   };
-  
+
   useEffect(() => {
       axios.get(`${config.apiUri}/finance/me`)
       .then((res) => setData(res
         .filter((transaction) => transaction.type === 'loan' || transaction.type === 'repay')
         .map((transaction) => ({ ...transaction, amount: translateRates(transaction.amount) }))
         .sort((a, b) => new Date(b.date) - new Date(a.date)))
-    );
+        );
   }, [user, currency, exchangeRates]);
 
   const toTableObject = (lendOrLoan) => ({
@@ -131,7 +131,21 @@ export default function LendsAndLoans(props) {
           exchangeRates={exchangeRates}
           buttonText='Lend'
           user={user}
-          onClick={() => console.log('hello')}
+          onClick={(recipient, amount, description) =>
+            axios
+              .post(`${config.apiUri}/finance/lend`, {
+                amount,
+                recipient,
+                description,
+              })
+              .then((res) => {
+                setUser({ ...user, balance: translateRates(user.balance) - translateRates(res.data.amount) });
+                setData((prevData) => [
+                  ...prevData,
+                  { ...res.data, amount: translateRates(res.data.amount), type: 'loan' },
+                ]);
+              })
+          }
         />
         <Transfer
           title={`New Loan`}
@@ -139,6 +153,20 @@ export default function LendsAndLoans(props) {
           buttonText='Request'
           user={user}
           exchangeRates={exchangeRates}
+          onClick={(recipient, amount, description) =>
+            axios
+              .post(`${config.apiUri}/finance/loan`, {
+                amount,
+                recipient,
+                description,
+              })
+              .then((res) => {
+                setData((prevData) => [
+                  ...prevData,
+                  { ...res.data, type: 'loan' },
+                ]);
+              })
+          }
         />
         {/* </MainContainer> */}
         <StyledInfoCard

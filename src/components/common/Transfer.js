@@ -36,6 +36,7 @@ const ErrorText = styled.p(({ theme }) => ({
 
 export default function Transfer(props) {
   const [recipient, setRecipient] = useState('');
+  const [description, setDescription] = useState('');
   const [amount, setAmount] = useState(1);
   const { user } = useContext(userContext);
   const { exchangeRates } = useContext(ratesContext);
@@ -49,6 +50,15 @@ export default function Transfer(props) {
           placeholder={props.recipientPlaceholder || 'Username'}
           value={recipient}
           onChange={(event) => setRecipient(event.target.value)}
+          fullWidth
+        />
+      </InputContainer>
+      <InputContainer>
+        <Label>Description (Optional)</Label>
+        <TextField
+          placeholder={props.descriptionPlaceholder || 'Description'}
+          value={props.description}
+          onChange={(event) => setDescription(event.target.value)}
           fullWidth
         />
       </InputContainer>
@@ -77,7 +87,7 @@ export default function Transfer(props) {
           amount <= 0 ||
           !Number.isSafeInteger(amount)
         }
-        onClick={() => props.onClick?.(recipient, amount)}
+        onClick={() => props.onClick?.(recipient, amount, description)}
       >
         {props.buttonText || 'Send'}
       </Button>

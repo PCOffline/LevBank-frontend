@@ -30,6 +30,7 @@ const transactionFields = [
 
 export default function Transactions(props) {
   const { transactions, currency, className } = props;
+  const [filteredTransactions, setFilteredTransactions] = useState([...transactions]);
   const { user } = useContext(userContext);
   const { exchangeRates } = useContext(ratesContext);
 
@@ -39,23 +40,24 @@ export default function Transactions(props) {
   };
 
   const toTableObject = (transaction) => ({
-    negative: transaction.to !== undefined,
-    amount: `${transaction.to ? '-' : '+'}${transaction.amount} ${
-      props.currency
-    }`,
-    date: transaction.date,
+    negative: transaction.sender === user.username,
+    amount: `${transaction.sender === user.username ? '-' : '+'}${translateRates(transaction.amount)} ${props.currency}`,
+    timestamp: transaction.timestamp,
+    date: new Date(transaction.timestamp).toLocaleDateString(),
     description: transaction.description,
-    to: transaction.to,
-    from: transaction.from,
+    to: transaction.sender,
+    from: transaction.recipient,
   });
 
+  const tableData = useMemo(() => transactions.map(toTableObject), [transactions, currency, exchangeRates]);
+
   return (
-    <Container className={props.className}>
+    <Container className={className}>
       <Title>Transactions</Title>
-      <DateRange data={props.transactions} setData={setFilteredTransactions} />
+      <DateRange data={tableData} setData={(data) => setFilteredTransactions(data)} />
       <Table
         fields={transactionFields}
-        data={filteredTransactions.map((transaction) => toTableObject(transaction))}
+        data={filteredTransactions}
       />
     </Container>
   );
