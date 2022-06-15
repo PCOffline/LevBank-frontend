@@ -1,23 +1,23 @@
-[-] Add context for user (?)
-[*] Add admin pages
-[/] Send requests to backend
+[x] Add context for user (?)
+[x] Add admin pages
+[*] Send requests to backend
 [/] Add local storage
-[/] Restrict page access without user
-[/] Conditional loans & lends
+[x] Restrict page access without user
+[*] Conditional loans & lends
 [-] Expiry date for loans & lends
-[/] Loan Requests
-[/] On repay/withdraw, remove from table and modify balance
+[*] Loan Requests
+[*] On repay/withdraw, remove from table and modify balance
 
 [/] Chat
-[/] Search & Edit Users
-[/] Admin Exchange
-[/] On approve/reject, remove from table and modify database (remove request & approve user)
+[*] Search & Edit Users
+[x] Admin Exchange
+[x] On approve/reject, remove from table and modify database (remove request & approve user)
 
 [/] On sign up send mail to Admin
 [/] On 0 balance send mail to Admin
 [/] On client no longer complaint to a loan, send mail to lender
-[-] Switch between ILS and LevCoin currencies
-[/] Rate limit requests to actual USD-ILS API
+[x] Switch between ILS and LevCoin currencies
+[x] Rate limit requests to actual USD-ILS API
 
 Legend:
  [-]: Not done
