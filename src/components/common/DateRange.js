@@ -32,7 +32,7 @@ export default function DateRange(props) {
 
   useEffect(() => setData(data.filter(
     (object) =>
-      new Date(object.date).getTime() >= getMinDateRange(range).getTime(),
+      new Date(object.timestamp).getTime() >= getMinDateRange(range).getTime(),
   )), [range, data]);
 
   const handleRangeChange = (event, newRange) => {
