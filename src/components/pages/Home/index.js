@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import UserInfo from './UserInfo';
 import Transactions from './Transactions';
 import styled from '@emotion/styled';
@@ -8,6 +8,7 @@ import InfoCard from '../../common/InfoCard';
 import Exchange from './Exchange';
 import axios from 'axios';
 import config from '../../../config';
+import { userContext } from '../../../ContextWrapper';
 
 const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -38,23 +39,9 @@ const StyledInfoCard = styled(InfoCard)(({ theme }) => ({
 }));
 
 export default function Home(props) {
-  const [exchangeRates, setExchangeRates] = useState({ ils: 1, lc: 1 });
   const [transactions, setTransactions] = useState([]);
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const refresh = async () => {
-      const rates = await axios
-        .get(`${config.apiUri}/finance/exchange`)
-        .catch(() => {}, []);
-
-      setExchangeRates(rates.data);
-    };
-    refresh();
-    const interval = setInterval(refresh, 1000 * 30);
-
-    return () => clearInterval(interval);
-  }, []);
+  const { setUser } = useContext(userContext);
 
   useEffect(() => {
     axios.get(`${config.apiUri}/finance/me`)
@@ -62,17 +49,25 @@ export default function Home(props) {
     .catch(() => {});
   }, []);
 
-  const handleTransfer = (recipient, amount) => {
-    axios.post(`${config.apiUri}/finance/transfer`, { recipient, amount })
+  const handleTransfer = (recipient, amount, description) => {
+    axios.post(`${config.apiUri}/finance/transfer`, { recipient, amount, description })
+    .then(() => {
+      setTransactions((prevTransactions) => [...prevTransactions, {
+        recipient,
+        amount,
+        date: new Date().toLocaleString(),
+      }]);
+      setUser((prevUser) => ({ ...prevUser, balance: prevUser.balance - amount }));
+    })
     .catch((err) => setError(err.response.data));
   };
 
   return (
     <Container>
-      <UserInfo exchangeRates={exchangeRates} currency={props.currency} transactions={transactions} />
-      <Transfer exchangeRates={exchangeRates} currency={props.currency} onClick={handleTransfer} error={error} />
-      <Exchange exchangeRates={exchangeRates} />
-      <StyledTransactions exchangeRates={exchangeRates} currency={props.currency} transactions={transactions} />
+      <UserInfo currency={props.currency} transactions={transactions} />
+      <Transfer currency={props.currency} onClick={handleTransfer} error={error} />
+      <Exchange />
+      <StyledTransactions currency={props.currency} transactions={transactions} />
       <StyledInfoCard
         title='Home Page'
         details={[

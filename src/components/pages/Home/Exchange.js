@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Card, OutlinedInput, Typography } from '@mui/material';
 import styled from '@emotion/styled';
+import { ratesContext } from '../../../ContextWrapper';
 
 const Container = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -24,11 +25,12 @@ const Label = styled(Typography)(({ theme }) => ({
 }));
 
 export default function Exchange(props) {
-  const { className, exchangeRates } = props;
+  const { className } = props;
 
   const [lc, setLc] = useState(1);
   const [ils, setIls] = useState(1);
   const [usd, setUsd] = useState(1);
+  const { exchangeRates } = useContext(ratesContext);
 
   useEffect(() => {
     // calculate new values based on current lc

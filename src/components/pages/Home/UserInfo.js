@@ -3,7 +3,7 @@ import { useContext, useState } from 'react';
 import { Typography, Card, MenuItem, Select } from '@mui/material';
 import SelectInput from '@mui/material/Select/SelectInput';
 import styled from '@emotion/styled';
-import { userContext } from '../../../ContextWrapper';
+import { ratesContext, userContext } from '../../../ContextWrapper';
 
 const Container = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -31,12 +31,11 @@ const Text = styled(Typography)(({ theme }) => ({
 
 export default function UserInfo(props) {
   const { user } = useContext(userContext);
-
-  console.log(user);
+  const { exchangeRates } = useContext(ratesContext);
 
   const translateRates = (lcValue) => {
     if (props.currency === 'LC') return lcValue;
-    return lcValue * props.exchangeRates.ils * props.exchangeRates.lc;
+    return (lcValue * exchangeRates.ils * exchangeRates.lc).toFixed(2);
   };
 
   return (

@@ -6,7 +6,6 @@ import Exchange from '../Home/Exchange';
 import UserSearch from './UserSearch';
 import Chat from '../../common/Chat';
 import InfoCard from '../../common/InfoCard';
-import { userContext } from '../../../ContextWrapper';
 import axios from 'axios';
 import config from '../../../config';
 
@@ -77,28 +76,13 @@ export default function Admin () {
   }, []);
 
   useEffect(() => {
-    const refresh = async () => {
-      const rates = await axios
-        .get(`${config.apiUri}/finance/exchange`)
-        .catch(() => {}, []);
-
-      setExchangeRates(rates.data);
-    };
-    refresh();
-    const interval = setInterval(refresh, 1000 * 30);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
     axios.get(`${config.apiUri}/user`)
       .then(res => setUsers(res.data))
       .catch(() => {});
   }, []);
 
   return (
-    <Container>
-      <StyledExchange exchangeRates={exchangeRates} />
+        <StyledExchange />
       <UserSearch users={users} setUsers={setUsers} />
       {/* <StyledChat users={users} /> */}
       <Requests error={requestsError}>

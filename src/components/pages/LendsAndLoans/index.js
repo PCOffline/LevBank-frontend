@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Typography, Card, Box, TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import Table from '../../common/Table';
 import DateRange from '../../common/DateRange';
 import InfoCard from '../../common/InfoCard';
 import Transfer from '../../common/Transfer';
+import { ratesContext, userContext } from '../../../ContextWrapper';
+import config from '../../../config';
+import axios from 'axios';
 
 const PageContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -75,18 +78,25 @@ const lendButtons = [
 ];
 
 export default function LendsAndLoans(props) {
-  const { user, currency } = props;
+  const { currency } = props;
   const [data, setData] = useState([]);
   const [filteredLendsOrLoans, setFilteredLendsOrLoans] = useState([]);
+  const { user, setUser } = useContext(userContext);
+  const { exchangeRates } = useContext(ratesContext);
+
+  const translateRates = (lcValue) => {
+    if (currency === 'LC') return lcValue;
+    return (lcValue * exchangeRates.ils * exchangeRates.lc).toFixed(2);
+  };
   
   useEffect(() => {
-    setData(
-      user.loans
-        .map((loan) => ({ ...loan, type: 'loan' }))
-        .concat(user.lends.map((lend) => ({ ...lend, type: 'lend' })))
-        .sort((a, b) => new Date(b.date) - new Date(a.date)),
+      axios.get(`${config.apiUri}/finance/me`)
+      .then((res) => setData(res
+        .filter((transaction) => transaction.type === 'loan' || transaction.type === 'repay')
+        .map((transaction) => ({ ...transaction, amount: translateRates(transaction.amount) }))
+        .sort((a, b) => new Date(b.date) - new Date(a.date)))
     );
-  }, [user.loans, user.lends, currency]);
+  }, [user, currency, exchangeRates]);
 
   const toTableObject = (lendOrLoan) => ({
     negative: lendOrLoan.type === 'lend',
@@ -118,7 +128,7 @@ export default function LendsAndLoans(props) {
         <Transfer
           title={`New Lend`}
           recipientText='Username'
-          exchangeRates={props.exchangeRates}
+          exchangeRates={exchangeRates}
           buttonText='Lend'
           user={user}
           onClick={() => console.log('hello')}
@@ -128,8 +138,7 @@ export default function LendsAndLoans(props) {
           recipientText='Username'
           buttonText='Request'
           user={user}
-          exchangeRates={props.exchangeRates}
-          onClick={() => console.log('hello')}
+          exchangeRates={exchangeRates}
         />
         {/* </MainContainer> */}
         <StyledInfoCard

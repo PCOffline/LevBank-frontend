@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   AppBar,
@@ -11,6 +11,7 @@ import {
   Box,
   Card,
   Avatar,
+  Switch,
 } from '@mui/material';
 import styled from '@emotion/styled';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
@@ -20,7 +21,10 @@ import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import ChatRoundedIcon from '@mui/icons-material/ChatRounded';
 import Logo from './components/common/Logo';
 import FaceIcon from '@mui/icons-material/Face';
-import { userContext } from './ContextWrapper';
+import { ratesContext, userContext } from './ContextWrapper';
+import Button, { LogoutButton } from './components/common/Button';
+import axios from 'axios';
+import config from './config';
 
 const NavBar = styled(List)(({ theme }) => ({
   flexDirection: 'column',
@@ -80,6 +84,8 @@ const ProfileContainer = styled(Box)(({ theme }) => ({
   justifyContent: 'space-around',
   padding: '10px 16px',
   borderRadius: '8px',
+  textAlign: 'center',
+  gap: '.5em',
 }));
 
 const ProfileSeparator = styled.span(({theme }) => ({
@@ -93,14 +99,51 @@ const InfoContainer = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
 }));
 
+const CurrencyContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '1em',
+  borderRadius: '8px',
+  backgroundColor: theme.palette.secondary.light,
+  padding: '10px 16px',
+  justifyContent: 'space-between',
+}));
+
 const AppContainer = styled.div({
   display: 'flex',
   height: '100%',
   gap: '3em',
 });
 
+const StyledLogoutButton = styled(LogoutButton)(({ theme }) => ({
+  marginLeft: '1em',
+  marginTop: '2em',
+  width: '100%',
+}));
+
 export default function App(props) {
   const { user } = useContext(userContext);
+  const { exchangeRates, setExchangeRates } = useContext(ratesContext);
+  const { currency, setCurrency } = props;
+
+  useEffect(() => {
+    const refresh = async () => {
+      const rates = await axios
+        .get(`${config.apiUri}/finance/exchange`)
+        .catch(() => {}, []);
+
+      setExchangeRates(rates.data);
+    };
+    refresh();
+    const interval = setInterval(refresh, 1000 * 30);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const translateRates = (lcValue) => {
+    if (currency === 'LC') return lcValue;
+    return (lcValue * exchangeRates.ils * exchangeRates.lc).toFixed(2);
+  };
 
   const renderNav = (route, text, icon) => {
     return (
@@ -121,7 +164,7 @@ export default function App(props) {
           <ProfileContainer>
             <InfoContainer>
               <ProfileName>{`${user.firstName} ${user.lastName}`}</ProfileName>
-              <ProfileBalance>{`${user.balance} ${props.currency}`}</ProfileBalance>
+              <ProfileBalance>{`${translateRates(user.balance)} ${currency}`}</ProfileBalance>
             </InfoContainer>
             <ProfileSeparator>•</ProfileSeparator>
             <InfoContainer>
@@ -129,6 +172,15 @@ export default function App(props) {
               <ProfileBalance>{user.username}</ProfileBalance>
             </InfoContainer>
           </ProfileContainer>
+          <CurrencyContainer>
+            <ProfileName>Currency - {currency}</ProfileName>
+            <Switch
+              checked={currency === 'LC'}
+              onChange={(event) =>
+                setCurrency(event.target.checked ? 'LC' : 'ILS')
+              }
+            />
+          </CurrencyContainer>
         </TopNav>
         {renderNav('/', 'Home', <HomeRoundedIcon />)}
         {renderNav(
@@ -138,6 +190,7 @@ export default function App(props) {
         )}
         {renderNav('/profile', 'Profile', <PersonRoundedIcon />)}
         {renderNav('/chat', 'Chat', <ChatRoundedIcon />)}
+        <StyledLogoutButton />
       </NavBar>
       <Outlet />
     </AppContainer>

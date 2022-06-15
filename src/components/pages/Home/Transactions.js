@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { Typography, Card } from '@mui/material';
 import styled from '@emotion/styled';
 import Table from '../../common/Table';
 import DateRange from '../../common/DateRange';
+import { ratesContext, userContext } from '../../../ContextWrapper';
 
 const Container = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -28,7 +29,14 @@ const transactionFields = [
 ];
 
 export default function Transactions(props) {
-  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const { transactions, currency, className } = props;
+  const { user } = useContext(userContext);
+  const { exchangeRates } = useContext(ratesContext);
+
+  const translateRates = (lcValue) => {
+    if (currency === 'LC') return lcValue;
+    return (lcValue * exchangeRates.ils * exchangeRates.lc).toFixed(2);
+  };
 
   const toTableObject = (transaction) => ({
     negative: transaction.to !== undefined,
