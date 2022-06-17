@@ -44,16 +44,11 @@ export default function Router() {
         {user?.type === 'client' && (
           <Route path='/' element={<App currency={currency} setCurrency={setCurrency} />}>
             <Route index element={<Home currency={currency} />} />
-            <Route path='transactions' element={<p>Hi</p>} />
-            <Route
-              path='lends-and-loans'
-              element={<LendsAndLoans currency={currency} />}
-            />
-            <Route path='profile' element={<Profile />} />
+            <Route path='lends-and-loans' element={<LendsAndLoans currency={currency} />}/>
+            <Route path='profile' element={<Profile currency={currency} />} />
             <Route path='chat' element={<ChatPage />} />
           </Route>
         )}
-        {/* // TODO: Actual user logic */}
         {user?.type === 'admin' && <Route path='/' element={<Admin currency={currency} setCurrency={setCurrency} />} index />}
       </Routes>
     </BrowserRouter>
