@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Typography, Card, Box, TextField } from '@mui/material';
 import styled from '@emotion/styled';
 import Table from '../../common/Table';
@@ -12,18 +12,15 @@ import axios from 'axios';
 const PageContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   marginTop: '2rem',
-  gap: '0 3rem',
+  gap: '1rem 3rem',
   flexWrap: 'wrap',
   width: '80%',
   paddingRight: '3rem',
   [theme.breakpoints.down('xl')]: {
-    gap: '0 3rem',
+    gap: '1rem 3rem',
     alignItems: 'start',
     flexDirection: 'row',
   },
-  [theme.breakpoints.down('lg')]: {
-
-  }
 }));
 
 const MainContainer = styled(Box)(({ theme }) => ({
@@ -44,12 +41,11 @@ const TableContainer = styled(Card)(({ theme }) => ({
   alignItems: 'flex-start',
   height: 'fit-content',
   width: '100%',
-  maxHeight: '51%',
+  maxHeight: '44%',
 }));
 
 const StyledInfoCard = styled(InfoCard)(({ theme }) => ({
-  height: 'inherit',
-  maxHeight: '80%',
+  maxHeight: '70%',
   [theme.breakpoints.down('xl')]: {
     width: '-webkit-fill-available',
   },
@@ -68,21 +64,90 @@ const lendsAndLoansFields = [
   { key: 'to', secondaryKey: 'from', name: 'To/From' },
 ];
 
-const lendButtons = [
-  {
-    text: (row) => row.type === 'lend' ? 'Withdraw' : 'Repay',
-    onClick: (row, index, button) => console.log({row, index, button}), // TODO: Send request to backend
-    isVisible: (row, index, button) => true, // TODO: Conditional visiblity based on bank terms
-    negative: (row) => row.type === 'loan',
-  },
-];
+const withdrawRepayStatuses = ['approved', 'invalid'];
 
 export default function LendsAndLoans(props) {
   const { currency } = props;
   const [data, setData] = useState([]);
   const [filteredLendsOrLoans, setFilteredLendsOrLoans] = useState([]);
+  const [requests, setRequests] = useState([]);
   const { user, setUser } = useContext(userContext);
   const { exchangeRates } = useContext(ratesContext);
+
+
+  const isLoan = (object) => object.to === user.username;
+
+  const lendButtons = [
+    {
+      text: (row) => (isLoan(row) ?  'Repay' : 'Withdraw'),
+      onClick: (row) =>
+        axios.post(
+          `${config.apiUri}/finance/${isLoan(row) ? 'repay' : 'withdraw'}`,
+          { transactionId: row.id },
+        ).then((response) => {
+          setRequests(prevRequests => {
+            const newRequests = [...prevRequests];
+            const index = newRequests.findIndex(request => request.id === row.id);
+            newRequests[index] = toTableObject(response.data);
+            return newRequests;
+          });
+          setUser((prevUser) => ({
+            ...prevUser,
+            balance:
+              translateRates(prevUser.balance) -
+              (isLoan(row) ? 1 : -1) * translateRates(response.amount),
+          }));
+        }
+        ),
+      isVisible: (row) =>
+        withdrawRepayStatuses.includes(row.status) &&
+        (isLoan(row) || row.status === 'invalid'),
+      negative: (row) => isLoan(row),
+    },
+    {
+      text: 'Approve',
+      isVisible: (row) => !isLoan(row) && row.status === 'pending',
+      onClick: (row) => {
+        axios
+          .post(`${config.apiUri}/finance/approve`, {
+            transactionId: row.id,
+          })
+          .then((response) => {
+              setRequests((prevRequests) => {
+                const newRequests = [...prevRequests];
+                const index = requests.findIndex(
+                  (request) => request.id === response.id
+                );
+                newRequests[index] = toTableObject(response.data);
+                return newRequests;
+              });
+              setUser((prevUser) => ({
+                ...prevUser,
+                balance:
+                  translateRates(prevUser.balance) -
+                  translateRates(response.amount),
+              }));
+            },
+          );
+      },
+    },
+    {
+      text: 'Reject',
+      isVisible: (row) => !isLoan(row) && row.status === 'pending',
+      onClick: (row) => {
+        axios
+          .post(`${config.apiUri}/finance/reject`, {
+            transactionId: row.id,
+          })
+          .then((response) =>
+            setRequests((prevRequests) =>
+              prevRequests.filter((request) => request.id === response._id),
+            ),
+          );
+      },
+      negative: true,
+    },
+  ];
 
   const translateRates = (lcValue) => {
     if (currency === 'LC') return lcValue;
@@ -90,37 +155,42 @@ export default function LendsAndLoans(props) {
   };
 
   useEffect(() => {
-      axios.get(`${config.apiUri}/finance/me`)
-      .then((res) => setData(res
-        .filter((transaction) => transaction.type === 'loan' || transaction.type === 'repay')
-        .map((transaction) => ({ ...transaction, amount: translateRates(transaction.amount) }))
-        .sort((a, b) => new Date(b.date) - new Date(a.date)))
-        );
+    axios
+      .get(`${config.apiUri}/finance/me/requests`)
+      .then((res) => setRequests(res.data.map(toTableObject)));
   }, [user, currency, exchangeRates]);
 
   const toTableObject = (lendOrLoan) => ({
-    negative: lendOrLoan.type === 'lend',
-    amount: `${lendOrLoan.type === 'lend' ? '-' : '+'}${
-      lendOrLoan.amount
-    } ${currency}`,
-    date: lendOrLoan.date,
+    id: lendOrLoan._id,
+    negative: lendOrLoan.sender === user.username,
+    grey: lendOrLoan.status === 'pending',
+    strikethrough: lendOrLoan.status === 'repaid',
+    amount: `${lendOrLoan.sender === user.username ? '-' : '+'}${translateRates(lendOrLoan.amount)} ${currency}`,
+    timestamp: lendOrLoan.timestamp,
+    date: new Date(lendOrLoan.timestamp).toLocaleDateString('en-GB'),
     description: lendOrLoan.description,
-    to: lendOrLoan.to,
-    from: lendOrLoan.from,
-    type: lendOrLoan.type,
+    to: lendOrLoan.recipient,
+    from: lendOrLoan.sender,
+    status: lendOrLoan.status,
   });
+
+  const tableData = useMemo(
+    () =>
+      data
+        .concat(requests)
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)),
+    [data, requests, currency, exchangeRates],
+  );
 
   return (
     <PageContainer>
       {/* <MainContainer> */}
       <TableContainer>
         <Title>Lends &amp; Loans</Title>
-        <DateRange data={data} setData={setFilteredLendsOrLoans} />
+        <DateRange data={tableData} setData={setFilteredLendsOrLoans} />
         <Table
           fields={lendsAndLoansFields}
-          data={filteredLendsOrLoans.map((lendOrLoan) =>
-            toTableObject(lendOrLoan),
-          )}
+          data={filteredLendsOrLoans}
           buttons={lendButtons}
         />
       </TableContainer>
@@ -138,13 +208,14 @@ export default function LendsAndLoans(props) {
                 recipient,
                 description,
               })
-              .then((res) => {
-                setUser({ ...user, balance: translateRates(user.balance) - translateRates(res.data.amount) });
-                setData((prevData) => [
-                  ...prevData,
-                  { ...res.data, amount: translateRates(res.data.amount), type: 'loan' },
-                ]);
-              })
+              .then((res) =>
+                setUser(prevUser => ({
+                  ...prevUser,
+                  balance:
+                    translateRates(prevUser.balance) -
+                    translateRates(res.data.amount),
+                })),
+              )
           }
         />
         <Transfer
@@ -161,9 +232,9 @@ export default function LendsAndLoans(props) {
                 description,
               })
               .then((res) => {
-                setData((prevData) => [
+                setRequests((prevData) => [
                   ...prevData,
-                  { ...res.data, type: 'loan' },
+                  toTableObject(res.data),
                 ]);
               })
           }
@@ -172,10 +243,11 @@ export default function LendsAndLoans(props) {
         <StyledInfoCard
           title='Lends &amp; Loans Page'
           details={[
-            `You can ask for a loan or lend money to other users by typing in their account ID
+            `You can ask for a loan or lend money to other users by typing in their username
            and the amount you are wishing to receive or give.`,
-            `Lends are marked in red and loans in green.
-           Lends that can be withdrawn have a green 'Withdraw' button next to them 
+            `Lends are marked in red and loans in green. Pending requests are marked in grey.
+            Repaid transactions are marked with a strikethrough.`,
+           `Lends that can be withdrawn have a green 'Withdraw' button next to them 
            and loans that can be repaid have a red 'Repay' button next to them.`,
             `You can contact an admin for more information.`,
           ]}

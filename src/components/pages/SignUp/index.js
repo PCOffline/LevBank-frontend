@@ -146,7 +146,6 @@ export default function SignUp() {
                   return { valid: false, errorText: 'Username cannot be longer than 20 characters' };
                 }
 
-                // TODO: Check if username is taken
                 return { valid: true };
               }}
               showError={submitFirstPressed}
