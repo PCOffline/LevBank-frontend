@@ -45,8 +45,8 @@ export default function Transactions(props) {
     timestamp: transaction.timestamp,
     date: new Date(transaction.timestamp).toLocaleDateString(),
     description: transaction.description,
-    to: transaction.sender,
-    from: transaction.recipient,
+    to: transaction.sender === user.username ? transaction.recipient : null,
+    from: transaction.sender || 'Admin',
   });
 
   const tableData = useMemo(() => transactions.map(toTableObject), [transactions, currency, exchangeRates]);
@@ -54,7 +54,7 @@ export default function Transactions(props) {
   return (
     <Container className={className}>
       <Title>Transactions</Title>
-      <DateRange data={tableData} setData={(data) => setFilteredTransactions(data)} />
+      <DateRange data={tableData} setData={setFilteredTransactions} />
       <Table
         fields={transactionFields}
         data={filteredTransactions}
