@@ -13,6 +13,7 @@ import Button, { NegativeButton } from '../common/Button';
 
 const StyledCell = styled(TableCell)(({ theme }) => ({
   borderColor: theme.palette.primary.dark,
+  backgroundColor: theme.palette.background.paper,
 }));
 
 const StyledRow = styled(TableRow)(({ theme }) => ({
@@ -25,9 +26,21 @@ const Text = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
 
+const StrikethroughText = styled(Text)(({ theme }) => ({
+  textDecoration: 'line-through',
+}));
+
 const NegativeText = styled(Text)(({ theme }) => ({
   color: 'darkred',
 }));
+
+const NegativeStrikethroughText = styled(NegativeText)(({ theme }) => ({
+  textDecoration: 'line-through',
+}));
+
+const GreyText = styled(Text)(({ theme }) => ({
+  color: theme.palette.text.disabled,
+}))
 
 const TitleText = styled(Text)(({ theme }) => ({
   color: theme.palette.primary.dark,
@@ -44,8 +57,19 @@ const StyledNegativeButton = styled(NegativeButton)(({ theme }) => ({
 export default function Table(props) {
   const { fields, data, buttons, className } = props;
 
+  const getTextType = (row) => {
+    if (row.grey) return GreyText;
+    if (row.strikethrough) {
+      if (row.negative) return NegativeStrikethroughText;
+      return StrikethroughText;
+    }
+
+    if (row.negative) return NegativeText;
+    return Text;
+  };
+
   const renderRow = (row, index) => {
-    const TextType = row.negative ? NegativeText : Text;
+    const TextType = getTextType(row);
 
     return (
       <StyledRow key={index}>
@@ -86,7 +110,7 @@ export default function Table(props) {
 
   return (
     <TableContainer component={Paper} elevation={0} className={className}>
-      <MuiTable>
+      <MuiTable stickyHeader>
         <TableHead>
           <TableRow>
             {fields.map((field) => (
