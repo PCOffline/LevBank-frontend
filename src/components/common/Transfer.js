@@ -34,12 +34,22 @@ const ErrorText = styled.p(({ theme }) => ({
   color: theme.palette.error.main,
 }));
 
+const defaultExpiryDate = new Date();
+defaultExpiryDate.setDate(defaultExpiryDate.getDate() + 30);
+
+const maxExpiryDate = new Date();
+maxExpiryDate.setDate(maxExpiryDate.getDate() + 60);
+
 export default function Transfer(props) {
+  const toFormattedDate = (date) => date.toISOString().split('T')[0];
+
   const [recipient, setRecipient] = useState('');
   const [description, setDescription] = useState('');
+  const [expiryDate, setExpiryDate] = useState(toFormattedDate(defaultExpiryDate));
   const [amount, setAmount] = useState(1);
   const { user } = useContext(userContext);
   const { exchangeRates } = useContext(ratesContext);
+
 
   return (
     <Container>
@@ -62,6 +72,21 @@ export default function Transfer(props) {
           fullWidth
         />
       </InputContainer>
+      {props.withExpiryDate && (
+        <InputContainer>
+          <Label>Expiry Date</Label>
+          <OutlinedInput
+            type='date'
+            value={expiryDate}
+            onChange={(event) => setExpiryDate(event.target.value)}
+            inputProps={{
+              min: toFormattedDate(new Date()),
+              max: toFormattedDate(maxExpiryDate),
+            }}
+            fullWidth
+          />
+        </InputContainer>
+      )}
       <InputContainer>
         <Label>Sum ({props.currency})</Label>
         <OutlinedInput
@@ -74,7 +99,9 @@ export default function Transfer(props) {
             max:
               props.currency === 'LC'
                 ? user.balance
-                : (user.balance * exchangeRates.ils * exchangeRates.lc).toFixed(2),
+                : (user.balance * exchangeRates.ils * exchangeRates.lc).toFixed(
+                    2,
+                  ),
           }}
           fullWidth
         />
@@ -87,7 +114,10 @@ export default function Transfer(props) {
           amount <= 0 ||
           !Number.isSafeInteger(amount)
         }
-        onClick={() => props.onClick?.(recipient, amount, description)}
+        onClick={() => {
+          if (props.withExpiryDate) props.onClick?.(recipient, new Date(expiryDate), amount, description);
+          else props.onClick?.(recipient, amount, description);
+        }}
       >
         {props.buttonText || 'Send'}
       </Button>

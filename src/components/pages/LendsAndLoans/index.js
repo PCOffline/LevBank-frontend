@@ -1,5 +1,5 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
-import { Typography, Card, Box, TextField } from '@mui/material';
+import { useContext, useEffect, useState } from 'react';
+import { Typography, Card, Box } from '@mui/material';
 import styled from '@emotion/styled';
 import Table from '../../common/Table';
 import DateRange from '../../common/DateRange';
@@ -41,7 +41,7 @@ const TableContainer = styled(Card)(({ theme }) => ({
   alignItems: 'flex-start',
   height: 'fit-content',
   width: '100%',
-  maxHeight: '44%',
+  maxHeight: '31%',
 }));
 
 const StyledInfoCard = styled(InfoCard)(({ theme }) => ({
@@ -61,6 +61,7 @@ const lendsAndLoansFields = [
   { key: 'amount', name: 'Amount' },
   { key: 'description', name: 'Description' },
   { key: 'date', name: 'Date' },
+  { key: 'expiryDate', name: 'Expiry Date' },
   { key: 'to', secondaryKey: 'from', name: 'To/From' },
 ];
 
@@ -68,7 +69,6 @@ const withdrawRepayStatuses = ['approved', 'invalid'];
 
 export default function LendsAndLoans(props) {
   const { currency } = props;
-  const [data, setData] = useState([]);
   const [filteredLendsOrLoans, setFilteredLendsOrLoans] = useState([]);
   const [requests, setRequests] = useState([]);
   const { user, setUser } = useContext(userContext);
@@ -106,7 +106,7 @@ export default function LendsAndLoans(props) {
     },
     {
       text: 'Approve',
-      isVisible: (row) => !isLoan(row) && row.status === 'pending',
+      isVisible: (row) => !isLoan(row) && row.status === 'pending' && row.expiryDate > new Date(),
       onClick: (row) => {
         axios
           .post(`${config.apiUri}/finance/approve`, {
@@ -133,7 +133,7 @@ export default function LendsAndLoans(props) {
     },
     {
       text: 'Reject',
-      isVisible: (row) => !isLoan(row) && row.status === 'pending',
+      isVisible: (row) => !isLoan(row) && row.status === 'pending' && row.expiryDate > new Date(),
       onClick: (row) => {
         axios
           .post(`${config.apiUri}/finance/reject`, {
@@ -164,30 +164,28 @@ export default function LendsAndLoans(props) {
     id: lendOrLoan._id,
     negative: lendOrLoan.sender === user.username,
     grey: lendOrLoan.status === 'pending',
-    strikethrough: lendOrLoan.status === 'repaid',
-    amount: `${lendOrLoan.sender === user.username ? '-' : '+'}${translateRates(lendOrLoan.amount)} ${currency}`,
+    strikethrough:
+      lendOrLoan.status === 'repaid' ||
+      (lendOrLoan.status === 'pending' &&
+        new Date(lendOrLoan.expiryDate) < new Date()),
+    amount: `${lendOrLoan.sender === user.username ? '-' : '+'}${translateRates(
+      lendOrLoan.amount,
+    )} ${currency}`,
     timestamp: lendOrLoan.timestamp,
     date: new Date(lendOrLoan.timestamp).toLocaleDateString('en-GB'),
+    expiryDate: new Date(lendOrLoan.expiryDate).toLocaleDateString('en-GB'),
     description: lendOrLoan.description,
     to: lendOrLoan.recipient,
     from: lendOrLoan.sender,
     status: lendOrLoan.status,
   });
 
-  const tableData = useMemo(
-    () =>
-      data
-        .concat(requests)
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)),
-    [data, requests, currency, exchangeRates],
-  );
-
   return (
     <PageContainer>
       {/* <MainContainer> */}
       <TableContainer>
         <Title>Lends &amp; Loans</Title>
-        <DateRange data={tableData} setData={setFilteredLendsOrLoans} />
+        <DateRange data={requests} setData={setFilteredLendsOrLoans} />
         <Table
           fields={lendsAndLoansFields}
           data={filteredLendsOrLoans}
@@ -201,11 +199,12 @@ export default function LendsAndLoans(props) {
           exchangeRates={exchangeRates}
           buttonText='Lend'
           user={user}
-          onClick={(recipient, amount, description) =>
+          onClick={(recipient, expiryDate, amount, description) =>
             axios
               .post(`${config.apiUri}/finance/lend`, {
                 amount,
                 recipient,
+                expiryDate,
                 description,
               })
               .then((res) =>
@@ -217,6 +216,7 @@ export default function LendsAndLoans(props) {
                 })),
               )
           }
+          withExpiryDate
         />
         <Transfer
           title={`New Loan`}
@@ -224,11 +224,12 @@ export default function LendsAndLoans(props) {
           buttonText='Request'
           user={user}
           exchangeRates={exchangeRates}
-          onClick={(recipient, amount, description) =>
+          onClick={(recipient, expiryDate, amount, description) =>
             axios
               .post(`${config.apiUri}/finance/loan`, {
                 amount,
                 recipient,
+                expiryDate,
                 description,
               })
               .then((res) => {
@@ -238,6 +239,7 @@ export default function LendsAndLoans(props) {
                 ]);
               })
           }
+          withExpiryDate
         />
         {/* </MainContainer> */}
         <StyledInfoCard
