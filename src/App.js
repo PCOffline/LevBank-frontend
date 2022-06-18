@@ -130,7 +130,7 @@ export default function App(props) {
     const refresh = async () => {
       const rates = await axios
         .get(`${config.apiUri}/finance/exchange`)
-        .catch(() => {}, []);
+        .catch(() => localStorage.getItem('exchangeRates'), []);
 
       setExchangeRates(rates.data);
     };

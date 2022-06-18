@@ -28,7 +28,12 @@ export default function Router() {
       axios.get(`${config.apiUri}/user/me`)
       .then((res) => setUser(res.data))
       // Handle not found
-      .catch(() => resetCookie());
+      .catch(() => {
+        const localUser = localStorage.getItem('user');
+
+        if (localUser) setUser(localUser);
+        else resetCookie();
+      });
     } else if (window.location.pathname !== '/login' && window.location.pathname !== '/register') resetCookie();
   }, []);
 
