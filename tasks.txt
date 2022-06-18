@@ -1,7 +1,7 @@
 [x] Add context for user (?)
 [x] Add admin pages
 [x] Send requests to backend
-[*] Add local storage
+[x] Add local storage
 [x] Restrict page access without user
 [x] Conditional loans & lends
 [x] Loan Requests
