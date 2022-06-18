@@ -50,6 +50,12 @@ export default function Transfer(props) {
   const { user } = useContext(userContext);
   const { exchangeRates } = useContext(ratesContext);
 
+  const translateRates = (value) =>
+    props.currency === 'LC'
+      ? value
+      : (value * exchangeRates.ils * exchangeRates.lc).toFixed(2);
+
+  const toLC = (value) => props.currency === 'LC' ? value : (value / exchangeRates.ils / exchangeRates.lc).toFixed(2);
 
   return (
     <Container>
@@ -96,12 +102,7 @@ export default function Transfer(props) {
           onChange={(event) => setAmount(+event.target.value)}
           inputProps={{
             min: 1,
-            max:
-              props.currency === 'LC'
-                ? user.balance
-                : (user.balance * exchangeRates.ils * exchangeRates.lc).toFixed(
-                    2,
-                  ),
+            max: translateRates(user.balance),
           }}
           fullWidth
         />
@@ -110,13 +111,13 @@ export default function Transfer(props) {
         variant='contained'
         disabled={
           !recipient.trim() ||
-          amount > user.balance ||
-          amount <= 0 ||
-          !Number.isSafeInteger(amount)
+          translateRates(amount) > translateRates(user.balance) ||
+          translateRates(amount) <= 0 ||
+          !Number.isSafeInteger(translateRates(amount))
         }
         onClick={() => {
-          if (props.withExpiryDate) props.onClick?.(recipient, new Date(expiryDate), amount, description);
-          else props.onClick?.(recipient, amount, description);
+          if (props.withExpiryDate) props.onClick?.(recipient, new Date(expiryDate), toLC(amount), description);
+          else props.onClick?.(recipient, toLC(amount), description);
         }}
       >
         {props.buttonText || 'Send'}

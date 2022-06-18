@@ -45,7 +45,7 @@ export default function Home(props) {
 
   useEffect(() => {
     axios.get(`${config.apiUri}/finance/me`)
-    .then(res => setTransactions(res.data))
+    .then(res => setTransactions(res.data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))))
     .catch(() => {});
   }, []);
 

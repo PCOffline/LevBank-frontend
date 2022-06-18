@@ -197,6 +197,7 @@ export default function LendsAndLoans(props) {
           title={`New Lend`}
           recipientText='Username'
           exchangeRates={exchangeRates}
+          currency={currency}
           buttonText='Lend'
           user={user}
           onClick={(recipient, expiryDate, amount, description) =>
@@ -224,6 +225,7 @@ export default function LendsAndLoans(props) {
           buttonText='Request'
           user={user}
           exchangeRates={exchangeRates}
+          currency={currency}
           onClick={(recipient, expiryDate, amount, description) =>
             axios
               .post(`${config.apiUri}/finance/loan`, {
