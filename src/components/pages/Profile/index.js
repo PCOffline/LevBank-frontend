@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import {
   IconButton,
   TextField,
@@ -12,6 +12,9 @@ import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import InfoCard from '../../common/InfoCard';
 import Button from '../../common/Button';
+import { userContext } from '../../../ContextWrapper';
+import config from '../../../config';
+import axios from 'axios';
 
 const PageContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -86,21 +89,25 @@ const Text = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
 
+const ErrorText = styled.p(({ theme }) => ({
+  color: theme.palette.error.main,
+}));
+
 const NameContainer = styled(Box)(({ theme }) => ({}));
 
 const StyledButton = styled(Button)(({ theme }) => ({
   marginTop: '1rem',
-}))
+}));
 
 const StyledInfoCard = styled(InfoCard)(({ theme }) => ({
   width: 'fit-content',
   [theme.breakpoints.down('lg')]: {
     flexGrow: '.21',
   }
-}))
+}));
 
 export default function Profile(props) {
-  const { user } = props;
+  const { user, setUser } = useContext(userContext);
   const [firstName, setFirstName] = useState(user.firstName);
   const [lastName, setLastName] = useState(user.lastName);
   const [username, setUsername] = useState(user.username);
@@ -109,6 +116,8 @@ export default function Profile(props) {
   const [profileSubmitFirstPressed, setProfileSubmitFirstPressed] = useState(false);
   const [passwordSubmitFirstPressed, setPasswordSubmitFirstPressed] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [profileError, setProfileError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const profileFieldsValidation = useRef({});
   const passwordFieldsValidation = useRef({});
 
@@ -118,16 +127,27 @@ export default function Profile(props) {
 
   const handlePasswordIsValidChange = (label, value) => {
     passwordFieldsValidation.current[label] = value;
-  }
+  };
 
   const handleProfileSubmit = () => {
     setProfileSubmitFirstPressed(true);
     if (
       Object.values(profileFieldsValidation.current).length &&
       Object.values(profileFieldsValidation.current).every((value) => value)
-    )
-      // TODO: Send a request to the backend
-      console.log('hi');
+    ) {
+      axios
+        .put(`${config.apiUri}/user`, { firstName, lastName, username })
+        .then((res) => {
+          setUser(res.data);
+          setFirstName(res.data.firstName);
+          setLastName(res.data.lastName);
+          setUsername(res.data.username);
+          setProfileError('');
+          setProfileSubmitFirstPressed(false);
+          setEditMode(false);
+        })
+        .catch((err) => setProfileError(err.response?.data.message ?? 'Something went wrong'));
+    }
   };
 
   const handlePasswordSubmit = () => {
@@ -136,9 +156,16 @@ export default function Profile(props) {
       Object.values(passwordFieldsValidation.current).length &&
       Object.values(passwordFieldsValidation.current).every((value) => value)
     )
-      // TODO: Send a request to the backend
-      console.log('hi')  ;
-  }
+      axios
+        .put(`${config.apiUri}/user/password`, { password })
+        .then(() => {
+          setPasswordSubmitFirstPressed(false);
+          setPassword('');
+          setConfirmPassword('');
+          setPasswordError('');
+        })
+        .catch((err) => setPasswordError(err.response?.data.message ?? 'Something went wrong'));
+  };
 
   const renderProfileValue = (label, value, setValue) => (
     <Box>
@@ -160,7 +187,7 @@ export default function Profile(props) {
       )}
     </Box>
   );
-  
+
   const renderPasswordValue = (label, value, setValue) => (
     <Box>
       <Label>{label}</Label>
@@ -193,6 +220,7 @@ export default function Profile(props) {
             {renderProfileValue('First name', firstName, setFirstName)}
             {renderProfileValue('Last name', lastName, setLastName)}
           </NameContainer>
+          {profileError && <ErrorText>{profileError}</ErrorText>}
           {editMode && (
             <StyledButton
               fullWidth
@@ -211,6 +239,7 @@ export default function Profile(props) {
             confirmPassword,
             setConfirmPassword,
           )}
+          {passwordError && <ErrorText>{passwordError}</ErrorText>}
           <StyledButton
             fullWidth
             variant='contained'
