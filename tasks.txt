@@ -13,15 +13,12 @@
 [x] On approve/reject, remove from table and modify database (remove request & approve user)
 [x] Loans & Lends Expiry
 
-[/] On sign up send mail to Admin
-[/] On 0 balance send mail to Admin
+[x] On sign up send mail to Admin
+[x] On 0 balance send mail to Admin
 [x] On client no longer complaint to a loan, send mail to lender
 [x] Switch between ILS and LevCoin currencies
 [x] Rate limit requests to actual USD-ILS API
 [x] Use WebSockets to receive problematic users/loans/transactions on Admin Page
-
-Bugs:
-[-] Check user is approved
 
 Legend:
  [-]: Not done

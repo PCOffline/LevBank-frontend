@@ -80,12 +80,13 @@ export default function SignUp() {
   const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [submitFirstPressed, setSubmitFirstPressed] = useState(false);
   const [error, setError] = useState('');
   const fieldsValidation = useRef({});
   const navigate = useNavigate();
-  
+
   const handleIsValidChange = (label, value) => {
     fieldsValidation.current[label] = value;
   };
@@ -96,7 +97,7 @@ export default function SignUp() {
       Object.values(fieldsValidation.current).length &&
       Object.values(fieldsValidation.current).every((value) => value)
     )
-       axios.post(`${config.apiUri}/auth/register`, { firstName, lastName, username, password })
+       axios.post(`${config.apiUri}/auth/register`, { firstName, lastName, username, email, password })
       .then(() => navigate('/login'))
       .catch((err) => setError(err.response.data));
   };
@@ -139,11 +140,17 @@ export default function SignUp() {
               setValue={(value) => setUsername(value.toLowerCase())}
               customValidation={(value) => {
                 if (value !== value.toLowerCase()) {
-                  return { valid: false, errorText: 'Username must be lowercase' };
+                  return {
+                    valid: false,
+                    errorText: 'Username must be lowercase',
+                  };
                 }
 
                 if (value.length > 20) {
-                  return { valid: false, errorText: 'Username cannot be longer than 20 characters' };
+                  return {
+                    valid: false,
+                    errorText: 'Username cannot be longer than 20 characters',
+                  };
                 }
 
                 return { valid: true };
@@ -151,6 +158,35 @@ export default function SignUp() {
               showError={submitFirstPressed}
               setIsValid={handleIsValidChange}
               type='name'
+              required
+            />
+            <SignInput
+              label='Email'
+              value={email}
+              setValue={setEmail}
+              customValidation={(value) => {
+
+                if (value.length > 50) {
+                  return {
+                    valid: false,
+                    errorText: 'Email cannot be longer than 50 characters',
+                  };
+                }
+
+                const emailRegex =
+                  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                if (!emailRegex.test(value)) {
+                  return {
+                    valid: false,
+                    errorText: 'Invalid email address',
+                  };
+                }
+
+                return { valid: true };
+              }}
+              showError={submitFirstPressed}
+              setIsValid={handleIsValidChange}
+              type='email'
               required
             />
             <SignInput
