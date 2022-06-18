@@ -248,7 +248,7 @@ export default function LendsAndLoans(props) {
             `You can ask for a loan or lend money to other users by typing in their username
            and the amount you are wishing to receive or give.`,
             `Lends are marked in red and loans in green. Pending requests are marked in grey.
-            Repaid transactions are marked with a strikethrough.`,
+            Repaid & withdrawn transactions are marked with a strikethrough.`,
            `Lends that can be withdrawn have a green 'Withdraw' button next to them 
            and loans that can be repaid have a red 'Repay' button next to them.`,
             `You can contact an admin for more information.`,
