@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { Box, Card, OutlinedInput, Typography } from '@mui/material';
 import Table from '../../common/Table';
 import styled from '@emotion/styled';
@@ -60,6 +60,20 @@ const StyledLogoutButton = styled(LogoutButton)(({ theme }) => ({
   top: '1rem',
 }));
 
+const Notifications = styled(Card)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
+  padding: '24px 30px 10px 30px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '1rem',
+  width: 'fit-content',
+}));
+
+const Notification = styled(Typography)(({ theme }) => ({
+  fontSize: '1.1rem',
+  color: theme.palette.primary.dark,
+}));
+
 const requestFields = [
   { key: 'firstName', name: 'First name' },
   { key: 'lastName', name: 'Last name' },
@@ -70,6 +84,23 @@ export default function Admin () {
   const [users, setUsers] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [requestsError, setRequestsError] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const ws = useRef(null);
+
+  useEffect(() => {
+    ws.current = new WebSocket(`ws://${config.apiUri.replace('http://', '')}/alerter`,);
+
+    ws.current.onopen = () => {
+      ws.current.send('"Hello"')
+    };
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setNotifications(data);
+    };
+    ws.current.onclose = () => {};
+
+    return () => ws.current.close();
+  }, []);
 
   const requestButtons = [
     {
@@ -144,6 +175,13 @@ export default function Admin () {
           ]}
           withChat={false}
         />
+        <StyledChat users={users.filter((user) => user.type !== 'admin')} />
+        <Notifications>
+          <Title>Notifications</Title>
+          {notifications.map((notification) => (
+            <Notification key={notification}>{notification}</Notification>
+          ))}
+        </Notifications>
       </ContentContainer>
     </>
   );

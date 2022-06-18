@@ -1,24 +1,27 @@
 [x] Add context for user (?)
 [x] Add admin pages
-[*] Send requests to backend
+[x] Send requests to backend
 [*] Add local storage
 [x] Restrict page access without user
-[*] Conditional loans & lends
+[x] Conditional loans & lends
 [x] Loan Requests
 [x] On repay/withdraw, remove from table and modify balance
 
-[/] Chat
-[*] Search & Edit Users
+[x] Chat
+[x] Search & Edit Users
 [x] Admin Exchange
 [x] On approve/reject, remove from table and modify database (remove request & approve user)
-[-] Loans & Lends Expiry
+[x] Loans & Lends Expiry
 
 [/] On sign up send mail to Admin
 [/] On 0 balance send mail to Admin
-[/] On client no longer complaint to a loan, send mail to lender
-[*] Switch between ILS and LevCoin currencies
+[x] On client no longer complaint to a loan, send mail to lender
+[x] Switch between ILS and LevCoin currencies
 [x] Rate limit requests to actual USD-ILS API
-[-] Use WebSockets to receive problematic users/loans/transactions on Admin Page
+[x] Use WebSockets to receive problematic users/loans/transactions on Admin Page
+
+Bugs:
+[-] Check user is approved
 
 Legend:
  [-]: Not done

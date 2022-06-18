@@ -1,8 +1,11 @@
-import { useEffect, useState, useRef } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Card, Box, Typography, TextField, IconButton, Button, OutlinedInput } from '@mui/material';
 import styled from '@emotion/styled';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import clone from 'just-clone';
+import config from '../../config';
+import axios from 'axios';
+import { userContext } from '../../ContextWrapper';
 
 const Container = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -92,43 +95,56 @@ const AuthorText = styled(ChatText)(({ theme }) => ({
 const ChatMessage = styled(Box)(({ theme }) => ({
 }));
 
-const mockMessages = [
-  [{ id: 'abc1', text: 'Hello', sender: 'self', date: new Date('2022-05-29T05:00:00Z') }, { id: 'abc2', text: 'Good morning', sender: 'self', date: new Date('2022-05-29T05:30:00Z') }, { id: 'abc3', text: 'This is a mock chat', sender: 'other', date: new Date('2022-05-29T06:00:00Z') }],
-  [{ id: 'bbc1', text: 'This is a mock chat', sender: 'other', date: new Date('2022-05-28T05:00:00Z') }, { id: 'bbc2', text: 'Good night', sender: 'self', date: new Date('2022-05-28T05:30:00Z') }, { id: 'bbc3', text: 'Good night!', sender: 'other', date: new Date('2022-05-28T06:00:00Z') }],
-  [{ id: 'cbc1', text: 'Hello admin', sender: 'self', date: new Date('2022-05-27T05:00:00Z') }, { id: 'cbc2', text: 'Good morning', sender: 'other', date: new Date('2022-06-28T05:00:00Z') }, { id: 'cbc3', text: 'This is a mock chat', sender: 'self', date: new Date('2022-07-29T05:00:00Z') }],
-];
-
 export default function Chat(props) {
   const { users, className } = props;
-  
-  // TODO: Get data from backend with a request
+  const [history, setHistory] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [chats, setChats] = useState(
-    users
-      .map((user) => ({
-        ...user,
-        chat: mockMessages[Math.floor(Math.random() * mockMessages.length)],
-      }))
-      .sort((a, b) => b.chat.date - a.chat.date),
-  );
-  const [selectedUser, setSelectedUser] = useState(chats[0]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const ws = useRef(null);
+  const { user } = useContext(userContext);
 
   useEffect(() => {
-    setSelectedUser(chats.find((chat) => chat.username === selectedUser.username));
-  }, [chats]);
+    ws.current = new WebSocket(`ws://${config.apiUri.replace('http://', '')}/chat`);
+    ws.current.onopen = () => {};
 
-  const userDisplayName = (user) => `${user.firstName} ${user.lastName}`;
-  
+    ws.current.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+
+      // TODO: Show error
+      if (message.error) console.error(message.error);
+
+      setHistory((prevHistory) => [...prevHistory, message]);
+    };
+
+    ws.current.onclose = () => {};
+
+    return () => ws.current.close();
+  }, [setHistory]);
+
+  useEffect(() => {
+    if (!selectedUser) return;
+    
+    axios.get(`${config.apiUri}/chat/history/${selectedUser?.username}`)
+      .then((res) => setHistory(res.data))
+      .catch(() => {});
+  }, [selectedUser]);
+
+  useEffect(() => {
+    setSelectedUser(prevSelectedUser => users.find((chatUser) => chatUser.username === prevSelectedUser?.username) || users[0]);
+  }, [users]);
+
+  const userDisplayName = (chatUser) => `${chatUser?.firstName} ${chatUser?.lastName}`;
+
   const handleMessageSend = () => {
-    console.log('hello');
-    // TODO: Websocket logic here!
+    if (newMessage.length === 0) return;
+
+    const message = {
+      recipient: selectedUser.username,
+      message: newMessage,
+    };
+
+    ws.current.send(JSON.stringify(message));
     setNewMessage('');
-    setChats((prevChats) => {
-      const index = prevChats.indexOf(selectedUser);
-      const newChats = clone(prevChats);
-      newChats[index].chat.push({ text: newMessage, sender: 'self', date: new Date(), id: Math.random().toString(36).substring(7) });
-      return newChats;
-    });
   };
 
   return (
@@ -137,34 +153,34 @@ export default function Chat(props) {
       <SubTitle>Chatting with {userDisplayName(selectedUser)}</SubTitle>
       <ChatGlobalContainer>
         <ChatUsersContainer>
-          {chats.map((user) => {
+          {users.map((chatUser) => {
             const TextType =
-              user.username === selectedUser.username ? ActiveText : Text;
+              chatUser.username === selectedUser?.username ? ActiveText : Text;
 
             return (
               <UserContainer
-                onClick={() => setSelectedUser(user)}
-                key={user.username}
+                onClick={() => setSelectedUser(chatUser)}
+                key={chatUser.username}
               >
-                <TextType>{userDisplayName(user)}</TextType>
+                <TextType>{userDisplayName(chatUser)}</TextType>
               </UserContainer>
             );
           })}
         </ChatUsersContainer>
         <ChatContainer>
           <ChatMessagesContainer>
-            {selectedUser.chat.map((message, index, userChats) => {
+            {history.map((message, index, userChats) => {
               const authorLabel =
-                message.sender === 'self'
+                message.sender === user.username
                   ? 'Me:'
                   : `${selectedUser.firstName}:`;
 
                 const showAuthorLabel = userChats[index - 1]?.sender !== message.sender;
 
               return (
-                <ChatMessage key={message.id}>
+                <ChatMessage key={message._id}>
                   {showAuthorLabel && <AuthorText>{authorLabel}</AuthorText>}
-                  <ChatText>{message.text}</ChatText>
+                  <ChatText>{message.message}</ChatText>
                 </ChatMessage>
               );
             })}

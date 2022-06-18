@@ -2,6 +2,9 @@ import InfoCard from '../../common/InfoCard';
 import Chat from '../../common/Chat';
 import styled from '@emotion/styled';
 import { Box } from '@mui/system';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import config from '../../../config';
 
 const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -13,8 +16,15 @@ const StyledChat = styled(Chat)(({ theme }) => ({
   minWidth: '60%'
 }));
 
-export default function ChatPage(props) {
-  const { users } = props;
+export default function ChatPage() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`${config.apiUri}/user`)
+      .then((res) => setUsers(res.data))
+      .catch(() => {});
+  }, []);
 
   return (
     <Container>
