@@ -66,6 +66,7 @@ export default function UserSearch (props) {
   const [newUsername, setNewUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
   const [balance, setBalance] = useState(0);
   const [saveFirstPressed, setSaveFirstPressed] = useState(false);
   const [showUser, setShowUser] = useState(false);
@@ -78,6 +79,7 @@ export default function UserSearch (props) {
     setFirstName('');
     setLastName('');
     setNewUsername('');
+    setEmail('');
     setBalance(0);
   };
 
@@ -95,6 +97,7 @@ export default function UserSearch (props) {
     setNewUsername(response.username);
     setFirstName(response.firstName);
     setLastName(response.lastName);
+    setEmail(response.email);
     setBalance(response.balance);
     setShowUser(true);
   };
@@ -110,7 +113,7 @@ export default function UserSearch (props) {
       Object.values(fieldsValidation.current).every((value) => value)
     ) {
         axios
-          .put(`${config.apiUri}/user/${user.username}`, { firstName, lastName, balance: +balance, newUsername })
+          .put(`${config.apiUri}/user/${user.username}`, { firstName, lastName, balance: +balance, newUsername, email })
           .then((res) => {
             const index = props.users.indexOf(user);
             props.setUsers((prevUsers) => {
@@ -134,11 +137,11 @@ export default function UserSearch (props) {
     });
   };
 
-  const renderUserValue = (label, value, setValue) => (
+  const renderUserValue = (label, value, setValue, type) => (
     <Box>
       <Label>{label}</Label>
       <SignInput
-        type='name'
+        type={type ?? 'name'}
         value={value}
         setValue={setValue}
         label={label}
@@ -180,6 +183,7 @@ export default function UserSearch (props) {
           </InputsContainer>
           <InputsContainer>
             {renderUserValue('Username', newUsername, setNewUsername)}
+            {renderUserValue('Email', email, setEmail, 'email')}
             <Box>
               <Label>Balance</Label>
               <OutlinedInput

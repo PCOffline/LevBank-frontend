@@ -111,6 +111,7 @@ export default function Profile(props) {
   const [firstName, setFirstName] = useState(user.firstName);
   const [lastName, setLastName] = useState(user.lastName);
   const [username, setUsername] = useState(user.username);
+  const [email, setEmail] = useState(user.email);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [profileSubmitFirstPressed, setProfileSubmitFirstPressed] = useState(false);
@@ -136,12 +137,13 @@ export default function Profile(props) {
       Object.values(profileFieldsValidation.current).every((value) => value)
     ) {
       axios
-        .put(`${config.apiUri}/user`, { firstName, lastName, username })
+        .put(`${config.apiUri}/user`, { firstName, lastName, username, email })
         .then((res) => {
           setUser(res.data);
           setFirstName(res.data.firstName);
           setLastName(res.data.lastName);
           setUsername(res.data.username);
+          setEmail(res.data.email);
           setProfileError('');
           setProfileSubmitFirstPressed(false);
           setEditMode(false);
@@ -167,12 +169,12 @@ export default function Profile(props) {
         .catch((err) => setPasswordError(err.response?.data.message ?? 'Something went wrong'));
   };
 
-  const renderProfileValue = (label, value, setValue) => (
+  const renderProfileValue = (label, value, setValue, type) => (
     <Box>
       <Label>{label}</Label>
       {editMode ? (
         <SignInput
-          type='name'
+          type={type ?? 'name'}
           value={value}
           setValue={setValue}
           label={label}
@@ -219,6 +221,7 @@ export default function Profile(props) {
             {renderProfileValue('Username', username, setUsername)}
             {renderProfileValue('First name', firstName, setFirstName)}
             {renderProfileValue('Last name', lastName, setLastName)}
+            {renderProfileValue('Email', email, setEmail, 'email')}
           </NameContainer>
           {profileError && <ErrorText>{profileError}</ErrorText>}
           {editMode && (
