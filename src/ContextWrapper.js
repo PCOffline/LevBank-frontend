@@ -8,7 +8,7 @@ export default function ContextWrapper(props) {
   const [exchangeRates, setExchangeRates] = useState({ ils: 1, lc: 1 });
 
   useEffect(() => {
-    localStorage.setItem('user', JSON.stringify(user));
+    if (user) localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('exchangeRates', JSON.stringify(exchangeRates));
   }, [user, exchangeRates]);
 

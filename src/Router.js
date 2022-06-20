@@ -29,10 +29,7 @@ export default function Router() {
       .then((res) => setUser(res.data))
       // Handle not found
       .catch(() => {
-        const localUser = localStorage.getItem('user');
-
-        if (localUser) setUser(localUser);
-        else resetCookie();
+        resetCookie();
       });
     } else if (window.location.pathname !== '/login' && window.location.pathname !== '/register') resetCookie();
   }, []);
