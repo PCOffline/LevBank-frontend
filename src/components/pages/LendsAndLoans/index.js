@@ -106,7 +106,7 @@ export default function LendsAndLoans(props) {
     },
     {
       text: 'Approve',
-      isVisible: (row) => !isLoan(row) && row.status === 'pending' && row.expiryDate > new Date(),
+      isVisible: (row) => !isLoan(row) && row.status === 'pending' && row.expiryTimestamp > new Date(),
       onClick: (row) => {
         axios
           .post(`${config.apiUri}/finance/approve`, {
@@ -133,7 +133,7 @@ export default function LendsAndLoans(props) {
     },
     {
       text: 'Reject',
-      isVisible: (row) => !isLoan(row) && row.status === 'pending' && row.expiryDate > new Date(),
+      isVisible: (row) => !isLoan(row) && row.status === 'pending' && row.expiryTimestamp > new Date(),
       onClick: (row) => {
         axios
           .post(`${config.apiUri}/finance/reject`, {
@@ -174,6 +174,7 @@ export default function LendsAndLoans(props) {
     timestamp: lendOrLoan.timestamp,
     date: new Date(lendOrLoan.timestamp).toLocaleDateString('en-GB'),
     expiryDate: new Date(lendOrLoan.expiryDate).toLocaleDateString('en-GB'),
+    expiryTimestamp: new Date(lendOrLoan.expiryDate),
     description: lendOrLoan.description,
     to: lendOrLoan.recipient,
     from: lendOrLoan.sender,
