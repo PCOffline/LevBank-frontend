@@ -9,6 +9,7 @@ import InfoCard from '../../common/InfoCard';
 import axios from 'axios';
 import config from '../../../config';
 import { LogoutButton } from '../../common/Button';
+import { ratesContext } from '../../../ContextWrapper';
 
 const ContentContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -85,7 +86,22 @@ export default function Admin () {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [requestsError, setRequestsError] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const { setExchangeRates } = useContext(ratesContext);
   const ws = useRef(null);
+
+  useEffect(() => {
+    const refresh = async () => {
+      const rates = await axios
+        .get(`${config.apiUri}/finance/exchange`)
+        .catch(() => localStorage.getItem('exchangeRates'), []);
+
+      setExchangeRates(rates.data);
+    };
+    refresh();
+    const interval = setInterval(refresh, 1000 * 30);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     ws.current = new WebSocket(`ws://${config.apiUri.replace('http://', '')}/alerter`,);
